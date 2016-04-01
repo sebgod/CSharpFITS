@@ -1,5 +1,4 @@
 using System;
-using ArrayFuncs = nom.tam.util.ArrayFuncs;
 using NUnit.Framework;
 
 namespace nom.tam.util

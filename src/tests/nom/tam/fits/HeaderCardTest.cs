@@ -1,11 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using NUnit.Framework;
-
-using nom.tam.fits;
-using nom.tam.image;
-using nom.tam.util;
 
 namespace nom.tam.fits
 {
@@ -54,7 +48,6 @@ namespace nom.tam.fits
 
             p = new HeaderCard("COMMENT " + lng + lng);
             Assert.AreEqual(lng, p.Comment);
-
         }
 
         [Test]

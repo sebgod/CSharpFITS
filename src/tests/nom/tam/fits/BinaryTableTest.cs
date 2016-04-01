@@ -1,8 +1,5 @@
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using nom.tam.fits;
 using nom.tam.util;
 using System.IO;
 using NUnit.Framework;
@@ -12,7 +9,6 @@ namespace nom.tam.fits
     [TestFixture]
     public class BinaryTableTester
     {
-
         byte[] bytes = new byte[50];
         byte[][] bits = new byte[50][];
         bool[] bools = new bool[50];
@@ -358,7 +354,6 @@ namespace nom.tam.fits
 
             btab = (BinaryTable) f.GetHDU(1).Data;
             Assert.AreEqual(100, btab.nRow);
-
 
             // Try getting data before we Read in the table.
 

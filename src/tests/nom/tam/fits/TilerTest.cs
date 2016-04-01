@@ -1,11 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
-
 using NUnit.Framework;
-
-using nom.tam.fits;
 using nom.tam.image;
 using nom.tam.util;
 

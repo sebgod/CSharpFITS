@@ -340,9 +340,9 @@ namespace nom.tam.util
 
             Cursor j = h1.GetCursor();
             Assert.AreEqual(true, j.MoveNext());
-            Assert.AreEqual("TestIter1", "Row 4", (String) ((DictionaryEntry) j.Current).Value);
+            Assert.AreEqual("Row 4", (String) ((DictionaryEntry) j.Current).Value);
             Assert.AreEqual(true, j.MoveNext());
-            Assert.AreEqual("TestIter2", "Row 5", (String) ((DictionaryEntry) j.Current).Value);
+            Assert.AreEqual("Row 5", (String) ((DictionaryEntry) j.Current).Value);
             Assert.AreEqual(false, j.MoveNext());
 
             h1.Clear();

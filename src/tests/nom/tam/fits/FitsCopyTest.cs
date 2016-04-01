@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using NUnit.Framework;
-
-using nom.tam.fits;
-using nom.tam.image;
 using nom.tam.util;
+using NUnit.Framework;
 
 namespace nom.tam.fits
 {
@@ -14,10 +9,9 @@ namespace nom.tam.fits
     public class FitsCopyTester
     {
         [Test]
-        public void TestFitsCopy( /*String[] args*/ )
+        public void TestFitsCopy( /*String[] args*/)
         {
-
-            String file = "E:\\CSharpFITSIO\\AISCHV3_228_13637_0001_sv09-fd-int.fits" /*args[0]*/;
+            String file = @"\tests\resources\nom\tam\fits\test\test_dup.fits";
 
             Fits f = new Fits(file);
             int i = 0;
@@ -44,7 +38,6 @@ namespace nom.tam.fits
             BufferedFile bf = new BufferedFile("gbfits3.fits" /*args[1]*/, FileAccess.ReadWrite, FileShare.ReadWrite);
             f.Write(bf);
             bf.Close();
-
         }
     }
 }

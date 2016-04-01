@@ -2,9 +2,6 @@ using System;
 using System.Collections;
 using System.IO;
 using NUnit.Framework;
-
-using nom.tam.fits;
-using nom.tam.image;
 using nom.tam.util;
 
 namespace nom.tam.fits
