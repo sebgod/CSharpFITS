@@ -39,15 +39,11 @@ namespace nom.tam.util
     [TestFixture]
     public class HashedListTester
     {
-
         [STAThread]
-
         [Test]
         public void Test()
         {
-            HashedList h = new HashedList();
-            h.Add("key1", 20);
-            h.Add("key2", 21);
+            HashedList h = new HashedList {{"key1", 20}, {"key2", 21}};
 
             Cursor c = h.GetCursor();
             Console.WriteLine("current: " + ((DictionaryEntry) c.Current).Value);
@@ -75,7 +71,6 @@ namespace nom.tam.util
             h1.Clear();
             show("Cleared", h1);
 
-
             // Insert Rows with Keys.
             h1.Add("key 1", "Row 1");
             h1.Add("key 2", "Row 2");
@@ -87,38 +82,35 @@ namespace nom.tam.util
             h1.Clear();
             show("Cleared", h1);
 
-
             // Again insert Rows with Keys.
             h1.Add("key 1", "Row 1");
             h1.Add("key 2", "Row 2");
             h1.Add("key 3", "Row 3");
             show("Three elements again!", h1);
-            System.Console.Out.WriteLine("Check contains (true):" + h1.ContainsValue("Row 2"));
-
+            Console.Out.WriteLine("Check contains (true):" + h1.ContainsValue("Row 2"));
 
             // Inserting Rows in h2.
             h2.Add("key 4", "Row 4");
             h2.Add("key 5", "Row 5");
-            System.Console.Out.WriteLine("Check containsAll (false):" + h1.ContainsAll(h2));
+            Console.Out.WriteLine("Check containsAll (false):" + h1.ContainsAll(h2));
 
             h1.AddAll(h2);
             show("Should have 5 elements now", h1);
-            System.Console.Out.WriteLine("Check containsAll (true):" + h1.ContainsAll(h2));
-            System.Console.Out.WriteLine("Check contains (true):" + h1.ContainsKey("key 4"));
+            Console.Out.WriteLine("Check containsAll (true):" + h1.ContainsAll(h2));
+            Console.Out.WriteLine("Check contains (true):" + h1.ContainsKey("key 4"));
 
             h1.RemoveValue("Row 4");
             show("Dropped Row 4:", h1);
-            System.Console.Out.WriteLine("Check containsAll (false):" + h1.ContainsAll(h2));
-            System.Console.Out.WriteLine("Check contains (false):" + h1.ContainsKey("Row 4"));
+            Console.Out.WriteLine("Check containsAll (false):" + h1.ContainsAll(h2));
+            Console.Out.WriteLine("Check contains (false):" + h1.ContainsKey("Row 4"));
 
-            System.Console.Out.WriteLine("Check isEmpty (false):" + h1.Empty);
+            Console.Out.WriteLine("Check isEmpty (false):" + h1.Empty);
             h1.RemoveValue("Row 1");
             h1.RemoveValue("Row 2");
             h1.RemoveValue("Row 3");
             h1.RemoveValue("Row 5");
             show("Removed all elements", h1);
-            System.Console.Out.WriteLine("Check isEmpty (true):" + h1.Empty);
-
+            Console.Out.WriteLine("Check isEmpty (true):" + h1.Empty);
 
             h1.Add("Row 1");
             h1.Add("Row 2");
@@ -131,13 +123,12 @@ namespace nom.tam.util
             h1.RetainAll(h2);
             show("Testing retainAll now just 2?", h1);
 
-
-            System.Console.Out.WriteLine("\n\n**** Test Cursor **** \n");
+            Console.Out.WriteLine("\n\n**** Test Cursor **** \n");
 
             j = h1.GetCursor();
             while (j.MoveNext())
             {
-                System.Console.Out.WriteLine("Cursor got: [" + ((DictionaryEntry) j.Current).Key + "] \"" +
+                Console.Out.WriteLine("Cursor got: [" + ((DictionaryEntry) j.Current).Key + "] \"" +
                                              ((DictionaryEntry) j.Current).Value + "\"");
             }
 
@@ -152,55 +143,55 @@ namespace nom.tam.util
             j.MoveNext();
             j.Remove(); // Should get rid of second row
             show("Removed second row with cursor", h1);
-            System.Console.Out.WriteLine("Cursor should still be OK:" + j.MoveNext() + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + j.MoveNext() + " [" +
                                          ((DictionaryEntry) j.Current).Key + "] \"" +
                                          ((DictionaryEntry) j.Current).Value + "\"");
-            System.Console.Out.WriteLine("Cursor should still be OK:" + j.MoveNext() + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + j.MoveNext() + " [" +
                                          ((DictionaryEntry) j.Current).Key + "] \"" +
                                          ((DictionaryEntry) j.Current).Value + "\"");
-            System.Console.Out.WriteLine("Cursor should be done:" + j.MoveNext());
+            Console.Out.WriteLine("Cursor should be done:" + j.MoveNext());
 
-            System.Console.Out.WriteLine("\n\n**** HashedListCursor ****\n");
+            Console.Out.WriteLine("\n\n**** HashedListCursor ****\n");
             i = h1.GetCursor(-1);
-            System.Console.Out.WriteLine("Cursor should still be OK:" + i.MoveNext() + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + i.MoveNext() + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
-            System.Console.Out.WriteLine("Cursor should still be OK:" + i.MoveNext() + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + i.MoveNext() + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
-            System.Console.Out.WriteLine("Cursor should still be OK:" + i.MoveNext() + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + i.MoveNext() + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
-            System.Console.Out.WriteLine("Cursor should still be OK:" + i.MoveNext() + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + i.MoveNext() + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
-            System.Console.Out.WriteLine("Cursor should be done:" + i.MoveNext());
+            Console.Out.WriteLine("Cursor should be done:" + i.MoveNext());
 
             i.Key = "key 1";
             i.MoveNext();
             i.Add("key 2", "Row 2");
-            System.Console.Out.WriteLine("Cursor should still be OK:" + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
             i.MoveNext();
-            System.Console.Out.WriteLine("Cursor should still be OK:" + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
             i.MoveNext();
-            System.Console.Out.WriteLine("Cursor should still be OK:" + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
-            System.Console.Out.WriteLine("Cursor should be done:" + i.MoveNext());
+            Console.Out.WriteLine("Cursor should be done:" + i.MoveNext());
 
             i.Key = "key 4";
-            System.Console.Out.WriteLine("Cursor should still be OK:" + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
             i.MoveNext();
-            System.Console.Out.WriteLine("Cursor should still be OK:" + " [" +
+            Console.Out.WriteLine("Cursor should still be OK:" + " [" +
                                          ((DictionaryEntry) i.Current).Key + "] \"" +
                                          ((DictionaryEntry) i.Current).Value + "\"");
-            System.Console.Out.WriteLine("Cursor should be done:" + i.MoveNext());
+            Console.Out.WriteLine("Cursor should be done:" + i.MoveNext());
 
             i.Key = "key 2";
             i.MoveNext();
@@ -213,20 +204,20 @@ namespace nom.tam.util
             i.Add("Row 1.5");
             i.Add("key 1.7", "Row 1.7");
             i.Add("Row 1.9");
-            System.Console.Out.WriteLine("Cursor should point to 2:" +
-                                         ((System.Collections.DictionaryEntry) i.Current).Key);
+            Console.Out.WriteLine("Cursor should point to 2:" +
+                                         ((DictionaryEntry) i.Current).Key);
             i.Key = "key 1.7";
-            System.Console.Out.WriteLine("Cursor should point to 1.7:" +
-                                         ((System.Collections.DictionaryEntry) i.Current).Key);
+            Console.Out.WriteLine("Cursor should point to 1.7:" +
+                                         ((DictionaryEntry) i.Current).Key);
         }
 
-        public static void show(System.String descrip, HashedList h)
+        public static void show(String descrip, HashedList h)
         {
-            System.Console.Out.WriteLine(descrip + " : [" + h.Count + "]");
+            Console.Out.WriteLine(descrip + " : [" + h.Count + "]");
             Object[] o = h.toArray();
             for (int i = 0; i < o.Length; i += 1)
             {
-                System.Console.Out.WriteLine("  " + o[i]);
+                Console.Out.WriteLine("  " + o[i]);
             }
         }
 
@@ -325,7 +316,6 @@ namespace nom.tam.util
             Assert.AreEqual(5, h1.Count);
             h1.RetainAll(h2);
             Assert.AreEqual(2, h1.Count);
-
         }
 
         [Test]
@@ -393,13 +383,11 @@ namespace nom.tam.util
             Assert.AreEqual(true, h1.ContainsValue("Row 2"));
             Assert.AreEqual("Row 3", (String) ((DictionaryEntry) j.Current).Value);
 
-
             j.Key = "key 4";
             Assert.AreEqual("Row 4", (String) ((DictionaryEntry) j.Current).Value);
             j.MoveNext();
             Assert.AreEqual("Row 5", (String) ((DictionaryEntry) j.Current).Value);
             Assert.AreEqual(false, j.MoveNext());
-
 
             j.Key = "key 2";
             Assert.AreEqual("Row 2", (String) ((DictionaryEntry) j.Current).Value);

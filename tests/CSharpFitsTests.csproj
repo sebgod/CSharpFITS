@@ -36,6 +36,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -58,12 +59,14 @@
     <Compile Include="nom\tam\util\BufferedFileTester.cs" />
     <Compile Include="nom\tam\util\ByteFormatParseTester.cs" />
     <Compile Include="nom\tam\util\HashedListTester.cs" />
+    <Compile Include="util\TestFileSetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="nom\tam\fits\ImageTest.cs.bak" />
+    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="resources\nom\tam\fits\test\ad43021000gis25670_lo.totsky.gz" />
+    <None Include="resources\nom\tam\fits\test\ht1.fits" />
     <None Include="resources\nom\tam\fits\test\rp600245n00_im1.fits.Z" />
     <None Include="resources\nom\tam\fits\test\test.fits" />
     <None Include="resources\nom\tam\fits\test\test.fits.bz2" />
@@ -77,6 +80,7 @@
       <Name>CSharpFITS</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

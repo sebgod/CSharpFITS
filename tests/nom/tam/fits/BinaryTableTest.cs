@@ -1,7 +1,7 @@
-
 using System;
 using nom.tam.util;
 using System.IO;
+using CSharpFitsTests.util;
 using NUnit.Framework;
 
 namespace nom.tam.fits
@@ -12,24 +12,22 @@ namespace nom.tam.fits
         byte[] bytes = new byte[50];
         byte[][] bits = new byte[50][];
         bool[] bools = new bool[50];
-
         short[][] shorts = new short[50][];
-
         int[] ints = new int[50];
         float[][][] floats = new float[50][][];
-
         double[] doubles = new double[50];
         long[] longs = new long[50];
         String[] strings = new String[50];
-
         float[][] vf = new float[50][];
         short[][] vs = new short[50][];
         double[][] vd = new double[50][];
         bool[][] vbool = new bool[50][];
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Initialize()
         {
+            TestFileSetup.ClearAndCopyToTarget();
+
             for (int i = 0; i < bits.Length; i++)
             {
                 bits[i] = new byte[2];
@@ -93,121 +91,172 @@ namespace nom.tam.fits
         [Test]
         public void TestSimpleIO()
         {
-            FitsFactory.UseAsciiTables = false;
+            Fits f = null;
 
-            Fits f = new Fits();
-            Object[] data = new Object[]
+            try
             {
-                bytes, bits, bools, shorts, ints,
-                floats, doubles, longs, strings
-            };
-            f.AddHDU(Fits.MakeHDU(data));
+                FitsFactory.UseAsciiTables = false;
 
-            BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
-            bhdu.SetColumnName(0, "bytes", null);
-            bhdu.SetColumnName(1, "bits", "bits later on");
-            bhdu.SetColumnName(6, "doubles", null);
-            bhdu.SetColumnName(5, "floats", "4 x 4 array");
-
-            BufferedFile bf = new BufferedFile("bt1.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bf);
-            bf.Flush();
-            bf.Close();
-
-            f = new Fits("bt1.fits");
-            f.Read();
-
-            Assert.AreEqual(2, f.NumberOfHDUs);
-
-            BinaryTableHDU thdu = (BinaryTableHDU) f.GetHDU(1);
-            Header hdr = thdu.Header;
-
-            Assert.AreEqual(9, hdr.GetIntValue("TFIELDS"));
-            Assert.AreEqual(2, hdr.GetIntValue("NAXIS"));
-            Assert.AreEqual(8, hdr.GetIntValue("BITPIX"));
-            Assert.AreEqual("BINTABLE", hdr.GetStringValue("XTENSION"));
-            Assert.AreEqual("bytes", hdr.GetStringValue("TTYPE1"));
-            Assert.AreEqual("doubles", hdr.GetStringValue("TTYPE7"));
-
-            for (int i = 0; i < data.Length; i += 1)
-            {
-                Object col = thdu.GetColumn(i);
-                if (i == 8)
+                f = new Fits();
+                Object[] data = new Object[]
                 {
-                    String[] st = (String[]) col;
+                    bytes, bits, bools, shorts, ints,
+                    floats, doubles, longs, strings
+                };
+                f.AddHDU(Fits.MakeHDU(data));
 
-                    for (int j = 0; j < st.Length; j += 1)
+                BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
+                bhdu.SetColumnName(0, "bytes", null);
+                bhdu.SetColumnName(1, "bits", "bits later on");
+                bhdu.SetColumnName(6, "doubles", null);
+                bhdu.SetColumnName(5, "floats", "4 x 4 array");
+
+                BufferedFile bf =
+                    new BufferedFile(
+                        TestFileSetup.GetTargetFilename("bt1.fits"),
+                        FileAccess.ReadWrite,
+                        FileShare.ReadWrite);
+                f.Write(bf);
+                bf.Flush();
+                bf.Close();
+                bf.Dispose();
+                f.Close();
+
+                f = new Fits(TestFileSetup.GetTargetFilename("bt1.fits"));
+                f.Read();
+
+                Assert.AreEqual(2, f.NumberOfHDUs);
+
+                BinaryTableHDU thdu = (BinaryTableHDU) f.GetHDU(1);
+                Header hdr = thdu.Header;
+
+                Assert.AreEqual(9, hdr.GetIntValue("TFIELDS"));
+                Assert.AreEqual(2, hdr.GetIntValue("NAXIS"));
+                Assert.AreEqual(8, hdr.GetIntValue("BITPIX"));
+                Assert.AreEqual("BINTABLE", hdr.GetStringValue("XTENSION"));
+                Assert.AreEqual("bytes", hdr.GetStringValue("TTYPE1"));
+                Assert.AreEqual("doubles", hdr.GetStringValue("TTYPE7"));
+
+                for (int i = 0; i < data.Length; i += 1)
+                {
+                    Object col = thdu.GetColumn(i);
+                    if (i == 8)
                     {
-                        st[j] = st[j].Trim();
+                        String[] st = (String[]) col;
+
+                        for (int j = 0; j < st.Length; j += 1)
+                        {
+                            st[j] = st[j].Trim();
+                        }
                     }
+                    Assert.AreEqual(true, ArrayFuncs.ArrayEquals(data[i], col));
                 }
-                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(data[i], col));
             }
-            f.Close();
+            finally
+            {
+                if (f != null)
+                {
+                    f.Close();
+                }
+            }
         }
 
         [Test]
         public void TestRowDelete()
         {
-            Fits f = new Fits("bt1.fits");
-            f.Read();
+            Fits f = null;
 
-            BinaryTableHDU thdu = (BinaryTableHDU) f.GetHDU(1);
+            try
+            {
+                f = new Fits(
+                    TestFileSetup.GetTargetFilename(
+                        TestFileSetup.GetTargetFilename("bt1.fits")));
+                f.Read();
 
-            Assert.AreEqual(50, thdu.NRows);
-            thdu.DeleteRows(10, 20);
-            Assert.AreEqual(30, thdu.NRows);
+                BinaryTableHDU thdu = (BinaryTableHDU) f.GetHDU(1);
 
-            double[] dbl = (double[]) thdu.GetColumn(6);
-            Assert.AreEqual(dbl[9], doubles[9]);
-            Assert.AreEqual(dbl[10], doubles[30]);
+                Assert.AreEqual(50, thdu.NRows);
+                thdu.DeleteRows(10, 20);
+                Assert.AreEqual(30, thdu.NRows);
 
-            BufferedFile bf = new BufferedFile("bt1x.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bf);
-            bf.Close();
-            f.Close();
+                double[] dbl = (double[]) thdu.GetColumn(6);
+                Assert.AreEqual(dbl[9], doubles[9]);
+                Assert.AreEqual(dbl[10], doubles[30]);
 
-            f = new Fits("bt1x.fits");
-            f.Read();
-            thdu = (BinaryTableHDU) f.GetHDU(1);
-            dbl = (double[]) thdu.GetColumn(6);
-            Assert.AreEqual(30, thdu.NRows);
-            Assert.AreEqual(9, thdu.NCols);
-            Assert.AreEqual(dbl[9], doubles[9]);
-            Assert.AreEqual(dbl[10], doubles[30]);
+                BufferedFile bf =
+                    new BufferedFile(
+                        TestFileSetup.GetTargetFilename("bt1x.fits"),
+                        FileAccess.ReadWrite,
+                        FileShare.ReadWrite);
 
-            thdu.DeleteRows(20);
-            Assert.AreEqual(20, thdu.NRows);
-            dbl = (double[]) thdu.GetColumn(6);
-            Assert.AreEqual(20, dbl.Length);
-            Assert.AreEqual(dbl[0], doubles[0]);
-            Assert.AreEqual(dbl[19], doubles[39]);
-            f.Close();
+                f.Write(bf);
+                bf.Close();
+                bf.Dispose();
+                f.Close();
+
+                f = new Fits(TestFileSetup.GetTargetFilename("bt1x.fits"));
+                f.Read();
+                thdu = (BinaryTableHDU) f.GetHDU(1);
+                dbl = (double[]) thdu.GetColumn(6);
+                Assert.AreEqual(30, thdu.NRows);
+                Assert.AreEqual(9, thdu.NCols);
+                Assert.AreEqual(dbl[9], doubles[9]);
+                Assert.AreEqual(dbl[10], doubles[30]);
+
+                thdu.DeleteRows(20);
+                Assert.AreEqual(20, thdu.NRows);
+                dbl = (double[]) thdu.GetColumn(6);
+                Assert.AreEqual(20, dbl.Length);
+                Assert.AreEqual(dbl[0], doubles[0]);
+                Assert.AreEqual(dbl[19], doubles[39]);
+            }
+            finally
+            {
+                if (f != null)
+                {
+                    f.Close();
+                }
+            }
         }
 
         [Test]
         public void TestVar()
         {
-            Object[] data = new Object[] {floats, vf, vs, vd, shorts, vbool};
-            Fits f = new Fits();
-            f.AddHDU(Fits.MakeHDU(data));
+            Fits f = null;
 
-            //BufferedDataStream bdos = new BufferedDataStream(new FileStream("bt2.fits", FileMode.Open, FileAccess.ReadWrite));
-            BufferedFile bdos = new BufferedFile("bt2.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bdos);
-            bdos.Close();
-
-            f = new Fits("bt2.fits", FileAccess.Read);
-            f.Read();
-            BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
-            Header hdr = bhdu.Header;
-
-            Assert.AreEqual(true, hdr.GetIntValue("PCOUNT") > 0);
-            Assert.AreEqual(6, hdr.GetIntValue("TFIELDS"));
-
-            for (int i = 0; i < data.Length; i += 1)
+            try
             {
-                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(data[i], bhdu.GetColumn(i)));
+                Object[] data = new Object[] {floats, vf, vs, vd, shorts, vbool};
+                f = new Fits();
+                f.AddHDU(Fits.MakeHDU(data));
+
+                BufferedFile bdos =
+                    new BufferedFile(
+                        TestFileSetup.GetTargetFilename("bt2.fits"),
+                        FileAccess.ReadWrite,
+                        FileShare.ReadWrite);
+
+                f.Write(bdos);
+                bdos.Close();
+                bdos.Dispose();
+                f.Close();
+
+                f = new Fits(TestFileSetup.GetTargetFilename("bt2.fits"), FileAccess.Read);
+                f.Read();
+                BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
+                Header hdr = bhdu.Header;
+
+                Assert.AreEqual(true, hdr.GetIntValue("PCOUNT") > 0);
+                Assert.AreEqual(6, hdr.GetIntValue("TFIELDS"));
+
+                for (int i = 0; i < data.Length; i += 1)
+                {
+                    Assert.AreEqual(true, ArrayFuncs.ArrayEquals(data[i], bhdu.GetColumn(i)));
+                }
+            }
+            finally
+            {
+                f.Close();
             }
 
         }
@@ -215,192 +264,253 @@ namespace nom.tam.fits
         [Test]
         public void TestSet()
         {
-            Fits f = new Fits("bt2.fits", FileAccess.Read);
-            f.Read();
-            BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
-            Header hdr = bhdu.Header;
+            Fits f = null;
+            try
+            {
+                f = new Fits(TestFileSetup.GetTargetFilename("bt2.fits"), FileAccess.Read);
+                f.Read();
 
-            // Check the various set methods on variable length data.
-            float[] dta = (float[]) bhdu.GetElement(4, 1);
-            dta = new float[] {22, 21, 20};
-            bhdu.SetElement(4, 1, dta);
+                BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
+                Header hdr = bhdu.Header;
 
-            // BufferedDataStream bdos = new BufferedDataStream(new FileStream("bt2a.fits",FileMode.Open));
-            BufferedFile bdos = new BufferedFile("bt2a.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bdos);
-            bdos.Close();
+                // Check the various set methods on variable length data.
+                float[] dta = (float[]) bhdu.GetElement(4, 1);
+                dta = new float[] {22, 21, 20};
+                bhdu.SetElement(4, 1, dta);
 
-            f = new Fits("bt2a.fits");
-            bhdu = (BinaryTableHDU) f.GetHDU(1);
-            float[] xdta = (float[]) bhdu.GetElement(4, 1);
+                BufferedFile bdos =
+                    new BufferedFile(
+                        TestFileSetup.GetTargetFilename("bt2a.fits"),
+                        FileAccess.ReadWrite,
+                        FileShare.ReadWrite);
+                f.Write(bdos);
+                bdos.Close();
+                bdos.Dispose();
+                f.Close();
 
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(dta, xdta));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
+                f = new Fits(TestFileSetup.GetTargetFilename("bt2a.fits"));
+                bhdu = (BinaryTableHDU) f.GetHDU(1);
+                float[] xdta = (float[]) bhdu.GetElement(4, 1);
 
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), dta));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(dta, xdta));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), dta));
 
-            float[] tvf = new float[] {101, 102, 103, 104};
-            vf[4] = tvf;
+                float[] tvf = new float[] {101, 102, 103, 104};
+                vf[4] = tvf;
 
-            bhdu.SetColumn(1, vf);
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), vf[4]));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
+                bhdu.SetColumn(1, vf);
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), vf[4]));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
 
-            // bdos = new BufferedDataStream(new FileStream("bt2b.fits",FileMode.Open));
-            bdos = new BufferedFile("bt2b.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bdos);
-            bdos.Close();
-            f.Close();
+                bdos = new BufferedFile(
+                    TestFileSetup.GetTargetFilename("bt2b.fits"),
+                    FileAccess.ReadWrite,
+                    FileShare.ReadWrite);
+                f.Write(bdos);
+                bdos.Close();
+                bdos.Dispose();
+                f.Close();
 
-            f = new Fits("bt2b.fits");
-            bhdu = (BinaryTableHDU) f.GetHDU(1);
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), vf[4]));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
+                f = new Fits(TestFileSetup.GetTargetFilename("bt2b.fits"));
+                bhdu = (BinaryTableHDU) f.GetHDU(1);
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), vf[4]));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
 
-            Object[] rw = (Object[]) bhdu.GetRow(4);
+                Object[] rw = (Object[]) bhdu.GetRow(4);
 
-            float[] trw = new float[] {-1, -2, -3, -4, -5, -6};
-            rw[1] = trw;
+                float[] trw = new float[] {-1, -2, -3, -4, -5, -6};
+                rw[1] = trw;
 
-            bhdu.SetRow(4, rw);
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
-            Assert.AreEqual(false, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), vf[4]));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), trw));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
+                bhdu.SetRow(4, rw);
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
+                Assert.AreEqual(false, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), vf[4]));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), trw));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
 
-            // bdos = new BufferedDataStream(new FileStream("bt2c.fits",FileMode.Open));
-            bdos = new BufferedFile("bt2c.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bdos);
-            bdos.Close();
-            f.Close();
+                // bdos = new BufferedDataStream(new FileStream("bt2c.fits",FileMode.Open));
+                bdos = new BufferedFile(
+                    TestFileSetup.GetTargetFilename("bt2c.fits"),
+                    FileAccess.ReadWrite,
+                    FileShare.ReadWrite);
+                f.Write(bdos);
+                bdos.Close();
+                bdos.Dispose();
+                f.Close();
 
-            f = new Fits("bt2c.fits");
-            bhdu = (BinaryTableHDU) f.GetHDU(1);
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
-            Assert.AreEqual(false, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), vf[4]));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), trw));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
-            f.Close();
+                f = new Fits(TestFileSetup.GetTargetFilename("bt2c.fits"));
+                bhdu = (BinaryTableHDU) f.GetHDU(1);
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(3, 1), vf[3]));
+                Assert.AreEqual(false, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), vf[4]));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(4, 1), trw));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bhdu.GetElement(5, 1), vf[5]));
+            }
+            finally
+            {
+                if (f != null)
+                {
+                    f.Close();
+                }
+            }
         }
 
         [Test]
         public void BuildByColumn()
         {
-            BinaryTable btab = new BinaryTable();
+            Fits f = null;
 
-            btab.AddColumn(floats);
-            btab.AddColumn(vf);
-            btab.AddColumn(strings);
-            btab.AddColumn(vbool);
-            btab.AddColumn(ints);
-
-            Fits f = new Fits();
-            f.AddHDU(Fits.MakeHDU(btab));
-
-            // BufferedDataStream bdos = new BufferedDataStream(new FileStream("bt3.fits",FileMode.Open));
-            BufferedFile bdos = new BufferedFile("bt3.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bdos);
-            bdos.Close();
-
-            f = new Fits("bt3.fits");
-            BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
-            btab = (BinaryTable) bhdu.Data;
-
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(floats, bhdu.GetColumn(0)));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(vf, bhdu.GetColumn(1))); // problem is here only
-
-            String[] col = (String[]) bhdu.GetColumn(2);
-            for (int i = 0; i < col.Length; i += 1)
+            try
             {
-                col[i] = col[i].Trim();
-            }
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(strings, col));
+                BinaryTable btab = new BinaryTable();
 
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(vbool, bhdu.GetColumn(3)));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(ints, bhdu.GetColumn(4)));
-            f.Close();
+                btab.AddColumn(floats);
+                btab.AddColumn(vf);
+                btab.AddColumn(strings);
+                btab.AddColumn(vbool);
+                btab.AddColumn(ints);
+
+                f = new Fits();
+                f.AddHDU(Fits.MakeHDU(btab));
+
+                BufferedFile bdos =
+                    new BufferedFile(
+                        TestFileSetup.GetTargetFilename("bt3.fits"),
+                        FileAccess.ReadWrite,
+                        FileShare.ReadWrite);
+                f.Write(bdos);
+                bdos.Close();
+                bdos.Dispose();
+                f.Close();
+
+                f = new Fits(TestFileSetup.GetTargetFilename("bt3.fits"));
+                BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
+                btab = (BinaryTable) bhdu.Data;
+
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(floats, bhdu.GetColumn(0)));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(vf, bhdu.GetColumn(1))); // problem is here only
+
+                String[] col = (String[]) bhdu.GetColumn(2);
+                for (int i = 0; i < col.Length; i += 1)
+                {
+                    col[i] = col[i].Trim();
+                }
+
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(strings, col));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(vbool, bhdu.GetColumn(3)));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(ints, bhdu.GetColumn(4)));
+            }
+            finally
+            {
+                if (f != null)
+                {
+                    f.Close();
+                }
+            }
         }
 
         [Test]
         public void BuildByRow()
         {
-            Fits f = new Fits("bt2.fits", FileAccess.Read);
-            f.Read();
+            Fits f = null;
 
-            BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
-            Header hdr = bhdu.Header;
-
-            BinaryTable btab = (BinaryTable) bhdu.Data;
-            for (int i = 0; i < 50; i += 1)
+            try
             {
-                Object[] row = (Object[]) btab.GetRow(i);
-                float[] qx = (float[]) row[1];
-                Array[] p = (Array[]) row[0];
-                float[] pt = (float[]) p.GetValue(0);
-                pt[0] = (float) (i*Math.Sin(i));
-                btab.AddRow(row);
+                f = new Fits(
+                    TestFileSetup.GetTargetFilename("bt2.fits"), 
+                    FileAccess.Read);
+                f.Read();
+
+                BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
+                Header hdr = bhdu.Header;
+
+                BinaryTable btab = (BinaryTable) bhdu.Data;
+                for (int i = 0; i < 50; i += 1)
+                {
+                    Object[] row = (Object[]) btab.GetRow(i);
+                    float[] qx = (float[]) row[1];
+                    Array[] p = (Array[]) row[0];
+                    float[] pt = (float[]) p.GetValue(0);
+                    pt[0] = (float) (i * Math.Sin(i));
+                    btab.AddRow(row);
+                }
+                f.Close();
+
+                f = new Fits();
+                f.AddHDU(Fits.MakeHDU(btab));
+
+                BufferedFile bf =
+                    new BufferedFile(
+                        TestFileSetup.GetTargetFilename("bt4.fits"),
+                        FileAccess.ReadWrite,
+                        FileShare.ReadWrite);
+                f.Write(bf);
+
+                bf.Flush();
+                bf.Close();
+                bf.Dispose();
+                f.Close();
+
+                f = new Fits(
+                    TestFileSetup.GetTargetFilename("bt4.fits"),
+                    FileAccess.Read);
+
+                btab = (BinaryTable) f.GetHDU(1).Data;
+                Assert.AreEqual(100, btab.NRows);
+
+                // Try getting data before we Read in the table.
+                Array[] xf = (Array[]) btab.GetColumn(0);
+                Array[] xft = (Array[]) xf.GetValue(50);
+                float[] xftt = (float[]) xft.GetValue(0);
+
+                Assert.AreEqual((float) 0, (float) xftt[0]);
+
+                xft = (Array[]) xf.GetValue(99);
+                xftt = (float[]) xft.GetValue(0);
+                Assert.AreEqual((float) (49 * Math.Sin(49)), (float) xftt[0]);
+
+                for (int i = 0; i < xf.Length; i += 3)
+                {
+                    bool[] ba = (bool[]) btab.GetElement(i, 5);
+                    float[] fx = (float[]) btab.GetElement(i, 1);
+
+                    int trow = i % 50;
+
+                    Assert.AreEqual(true, ArrayFuncs.ArrayEquals(ba, vbool[trow])); // prob 1
+                    Assert.AreEqual(true, ArrayFuncs.ArrayEquals(fx, vf[trow]));
+                }
+
+                // Fill the table.
+                Data data = f.GetHDU(1).Data;
+
+                xf = (Array[]) btab.GetColumn(0);
+                xft = (Array[]) xf.GetValue(50);
+                xftt = (float[]) xft.GetValue(0);
+                Assert.AreEqual(0F, (float) xftt[0]);
+                xft = (Array[]) xf.GetValue(99);
+                xftt = (float[]) xft.GetValue(0);
+                Assert.AreEqual((float) (49 * Math.Sin(49)), (float) xftt[0]);
+
+                for (int i = 0; i < xf.Length; i += 3)
+                {
+                    bool[] ba = (bool[]) btab.GetElement(i, 5);
+                    float[] fx = (float[]) btab.GetElement(i, 1);
+
+                    int trow = i % 50;
+
+                    Assert.AreEqual(true, ArrayFuncs.ArrayEquals(ba, vbool[trow])); // prob 2
+                    Assert.AreEqual(true, ArrayFuncs.ArrayEquals(fx, vf[trow]));
+                }
             }
-
-            f = new Fits();
-            f.AddHDU(Fits.MakeHDU(btab));
-
-            BufferedFile bf = new BufferedFile("bt4.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bf);
-            
-            bf.Flush();
-            bf.Close();
-
-            f = new Fits("bt4.fits", FileAccess.Read);
-            btab = (BinaryTable) f.GetHDU(1).Data;
-            Assert.AreEqual(100, btab.NRows);
-
-            // Try getting data before we Read in the table.
-            Array[] xf = (Array[]) btab.GetColumn(0);
-            Array[] xft = (Array[]) xf.GetValue(50);
-            float[] xftt = (float[]) xft.GetValue(0);
-
-            Assert.AreEqual((float) 0, (float) xftt[0]);
-            
-            xft = (Array[]) xf.GetValue(99);
-            xftt = (float[]) xft.GetValue(0);
-            Assert.AreEqual((float) (49*Math.Sin(49)), (float) xftt[0]);
-
-            for (int i = 0; i < xf.Length; i += 3)
+            finally
             {
-                bool[] ba = (bool[]) btab.GetElement(i, 5);
-                float[] fx = (float[]) btab.GetElement(i, 1);
-
-                int trow = i%50;
-
-                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(ba, vbool[trow])); // prob 1
-                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(fx, vf[trow]));
+                if (f != null)
+                {
+                    f.Close();
+                }
             }
-
-            // Fill the table.
-            Data data = f.GetHDU(1).Data;
-
-            xf = (Array[]) btab.GetColumn(0);
-            xft = (Array[]) xf.GetValue(50);
-            xftt = (float[]) xft.GetValue(0);
-            Assert.AreEqual(0F, (float) xftt[0]);
-            xft = (Array[]) xf.GetValue(99);
-            xftt = (float[]) xft.GetValue(0);
-            Assert.AreEqual((float) (49*Math.Sin(49)), (float) xftt[0]);
-
-            for (int i = 0; i < xf.Length; i += 3)
-            {
-                bool[] ba = (bool[]) btab.GetElement(i, 5);
-                float[] fx = (float[]) btab.GetElement(i, 1);
-
-                int trow = i%50;
-
-                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(ba, vbool[trow])); // prob 2
-                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(fx, vf[trow]));
-            }
-            f.Close();
         }
 
         [Test]
@@ -423,74 +533,113 @@ namespace nom.tam.fits
                 for (int j = 0; j < 2; j++)
                 {
                     t[j] = new int[2];
-                    t[j][0] = j*i;
-                    t[j][1] = (j + 2)*i;
+                    t[j][0] = j * i;
+                    t[j][1] = (j + 2) * i;
                 }
                 x[i][2] = t;
             }
 
-            Fits f = new Fits();
-            BasicHDU hdu = Fits.MakeHDU(x);
-            f.AddHDU(hdu);
-            BufferedFile bf = new BufferedFile("bt5.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bf);
-            bf.Close();
+            Fits f = null;
 
+            try
+            {
+                f = new Fits();
+                BasicHDU hdu = Fits.MakeHDU(x);
+                f.AddHDU(hdu);
 
-            /* Now get rid of some columns */
-            BinaryTableHDU xhdu = (BinaryTableHDU) hdu;
+                BufferedFile bf =
+                    new BufferedFile(
+                        TestFileSetup.GetTargetFilename("bt5.fits"),
+                        FileAccess.ReadWrite,
+                        FileShare.ReadWrite);
+                f.Write(bf);
+                bf.Close();
+                bf.Dispose();
 
-            // First column
-            Assert.AreEqual(3, xhdu.NCols);
-            xhdu.DeleteColumnsIndexOne(1, 1);
-            Assert.AreEqual(2, xhdu.NCols);
+                /* Now get rid of some columns */
+                BinaryTableHDU xhdu = (BinaryTableHDU) hdu;
 
-            xhdu.DeleteColumnsIndexZero(1, 1);
-            Assert.AreEqual(1, xhdu.NCols);
+                // First column
+                Assert.AreEqual(3, xhdu.NCols);
+                xhdu.DeleteColumnsIndexOne(1, 1);
+                Assert.AreEqual(2, xhdu.NCols);
 
-            bf = new BufferedFile("bt6.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bf);
-            bf.Close();
+                xhdu.DeleteColumnsIndexZero(1, 1);
+                Assert.AreEqual(1, xhdu.NCols);
 
-            f = new Fits("bt6.fits");
+                bf = new BufferedFile(
+                    TestFileSetup.GetTargetFilename("bt6.fits"),
+                    FileAccess.ReadWrite,
+                    FileShare.ReadWrite);
+                f.Write(bf);
+                bf.Close();
+                bf.Dispose();
+                f.Close();
 
-            xhdu = (BinaryTableHDU) f.GetHDU(1);
-            Assert.AreEqual(1, xhdu.NCols);
-            f.Close();
+                f = new Fits(TestFileSetup.GetTargetFilename("bt6.fits"));
+                xhdu = (BinaryTableHDU) f.GetHDU(1);
+                Assert.AreEqual(1, xhdu.NCols);
+            }
+            finally
+            {
+                if (f != null)
+                {
+                    f.Close();
+                }
+            }
         }
 
         [Test]
         public void TestDegenerate()
         {
-            String[] sa = new String[10];
-            int[,] ia = new int[10, 0];
-            Fits f = new Fits();
+            Fits f = null;
 
-            for (int i = 0; i < sa.Length; i += 1)
+            try
             {
-                sa[i] = "";
+                String[] sa = new String[10];
+                int[,] ia = new int[10, 0];
+
+                f = new Fits();
+
+                for (int i = 0; i < sa.Length; i += 1)
+                {
+                    sa[i] = "";
+                }
+
+                Object[] data = new Object[] {sa, ia};
+                BinaryTableHDU bhdu = (BinaryTableHDU) Fits.MakeHDU(data);
+                Header hdr = bhdu.Header;
+                f.AddHDU(bhdu);
+
+                BufferedFile bf =
+                    new BufferedFile(
+                        TestFileSetup.GetTargetFilename("bt7.fits"),
+                        FileAccess.ReadWrite,
+                        FileShare.ReadWrite);
+                f.Write(bf);
+                bf.Close();
+                bf.Dispose();
+
+                Assert.AreEqual(2, hdr.GetIntValue("TFIELDS"));
+                Assert.AreEqual(10, hdr.GetIntValue("NAXIS2"));
+                Assert.AreEqual(0, hdr.GetIntValue("NAXIS1"));
+
+                f.Close();
+
+                f = new Fits(TestFileSetup.GetTargetFilename("bt7.fits"));
+                bhdu = (BinaryTableHDU) f.GetHDU(1);
+                hdr = bhdu.Header;
+                Assert.AreEqual(2, hdr.GetIntValue("TFIELDS"));
+                Assert.AreEqual(10, hdr.GetIntValue("NAXIS2"));
+                Assert.AreEqual(0, hdr.GetIntValue("NAXIS1"));
             }
-
-            Object[] data = new Object[] {sa, ia};
-            BinaryTableHDU bhdu = (BinaryTableHDU) Fits.MakeHDU(data);
-            Header hdr = bhdu.Header;
-            f.AddHDU(bhdu);
-            BufferedFile bf = new BufferedFile("bt7.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(bf);
-            bf.Close();
-
-            Assert.AreEqual(2, hdr.GetIntValue("TFIELDS"));
-            Assert.AreEqual(10, hdr.GetIntValue("NAXIS2"));
-            Assert.AreEqual(0, hdr.GetIntValue("NAXIS1"));
-
-            f = new Fits("bt7.fits");
-            bhdu = (BinaryTableHDU) f.GetHDU(1);
-
-            hdr = bhdu.Header;
-            Assert.AreEqual(2, hdr.GetIntValue("TFIELDS"));
-            Assert.AreEqual(10, hdr.GetIntValue("NAXIS2"));
-            Assert.AreEqual(0, hdr.GetIntValue("NAXIS1"));
-            f.Close();
+            finally
+            {
+                if (f != null)
+                {
+                    f.Close();
+                }
+            }
         }
 
         [Test]
@@ -513,36 +662,49 @@ namespace nom.tam.fits
                 new String[] {"a", "b", "c", "d", "e", null}
             };
 
-            Fits f = new Fits();
-            f.AddHDU(Fits.MakeHDU(data));
-            BufferedFile ff = new BufferedFile("bt8.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            f.Write(ff);
-            ff.Flush();
-            ff.Close();
+            Fits f = null;
 
-            f = new Fits("bt8.fits");
-            BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
+            try
+            {
+                f = new Fits();
+                f.AddHDU(Fits.MakeHDU(data));
+                BufferedFile ff = new BufferedFile(TestFileSetup.GetTargetFilename("bt8.fits"), FileAccess.ReadWrite,
+                    FileShare.ReadWrite);
+                f.Write(ff);
+                ff.Flush();
+                ff.Close();
+                f.Close();
 
-            Assert.AreEqual("e", bhdu.GetElement(4, data.Length - 1));
-            Assert.AreEqual("", bhdu.GetElement(5, data.Length - 1));
+                f = new Fits(TestFileSetup.GetTargetFilename("bt8.fits"));
+                BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
 
-            String[] col = (String[]) bhdu.GetColumn(0);
-            Assert.AreEqual("a", col[0]);
-            Assert.AreEqual("f", col[5]);
+                Assert.AreEqual("e", bhdu.GetElement(4, data.Length - 1));
+                Assert.AreEqual("", bhdu.GetElement(5, data.Length - 1));
 
-            col = (String[]) bhdu.GetColumn(3);
-            Assert.AreEqual("", col[0]);
-            Assert.AreEqual("", col[5]);
+                String[] col = (String[]) bhdu.GetColumn(0);
+                Assert.AreEqual("a", col[0]);
+                Assert.AreEqual("f", col[5]);
 
-            col = (String[]) bhdu.GetColumn(7); // All nulls
-            Assert.AreEqual("", col[0]);
-            Assert.AreEqual("", col[5]);
+                col = (String[]) bhdu.GetColumn(3);
+                Assert.AreEqual("", col[0]);
+                Assert.AreEqual("", col[5]);
 
-            col = (String[]) bhdu.GetColumn(8);
+                col = (String[]) bhdu.GetColumn(7); // All nulls
+                Assert.AreEqual("", col[0]);
+                Assert.AreEqual("", col[5]);
 
-            Assert.AreEqual("a", col[0]);
-            Assert.AreEqual("", col[1]);
-            f.Close();
+                col = (String[]) bhdu.GetColumn(8);
+
+                Assert.AreEqual("a", col[0]);
+                Assert.AreEqual("", col[1]);
+            }
+            finally
+            {
+                if (f != null)
+                {
+                    f.Close();
+                }
+            }
         }
     }
 }

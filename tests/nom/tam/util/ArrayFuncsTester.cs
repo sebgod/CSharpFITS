@@ -3,16 +3,13 @@ using NUnit.Framework;
 
 namespace nom.tam.util
 {
-   
     [TestFixture]
     public class ArrayFuncsTester
     {
-
         /// <summary>Test and demonstrate the ArrayFuncs methods.</summary>
         [Test]
         public void TestArrayFuncs()
         {
-
             // Check GetBaseClass(), GetBaseLength() and ComputeSize() methods
             int[,,] test1 = new int[10, 9, 8];
             bool[][] test2 = new bool[4][];
@@ -26,15 +23,15 @@ namespace nom.tam.util
 
             Assert.AreEqual(typeof (int), ArrayFuncs.GetBaseClass(test1));
             Assert.AreEqual(4, ArrayFuncs.GetBaseLength(test1));
-            Assert.AreEqual(4*8*9*10, ArrayFuncs.ComputeSize(test1));
+            Assert.AreEqual(4 * 8 * 9 * 10, ArrayFuncs.ComputeSize(test1));
 
             Assert.AreEqual(typeof (bool), ArrayFuncs.GetBaseClass(test2));
             Assert.AreEqual(1, ArrayFuncs.GetBaseLength(test2));
-            Assert.AreEqual(1*(2 + 3 + 4 + 5), ArrayFuncs.ComputeSize(test2));
+            Assert.AreEqual(1 * (2 + 3 + 4 + 5), ArrayFuncs.ComputeSize(test2));
 
             Assert.AreEqual(typeof (double), ArrayFuncs.GetBaseClass(test3));
             Assert.AreEqual(8, ArrayFuncs.GetBaseLength(test3));
-            Assert.AreEqual(8*10*20, ArrayFuncs.ComputeSize(test3));
+            Assert.AreEqual(8 * 10 * 20, ArrayFuncs.ComputeSize(test3));
 
             Assert.AreEqual(typeof (System.Text.StringBuilder), ArrayFuncs.GetBaseClass(test4));
             Assert.AreEqual(-1, ArrayFuncs.GetBaseLength(test4));

@@ -855,7 +855,10 @@ namespace nom.tam.fits
         /// </summary>
         public virtual void Close()
         {
-            dataStr.Close();
+            if (dataStr != null)
+            {
+                dataStr.Close();
+            }
             dataStr = null;
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using CSharpFitsTests.util;
 using NUnit.Framework;
 using nom.tam.util;
 
@@ -17,14 +18,17 @@ namespace nom.tam.fits
                 fa[i] = new float[20];
             float[] pa = new float[3];
 
-            BufferedFile bf = new BufferedFile("rg1.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
+            BufferedFile bf = new BufferedFile(
+                TestFileSetup.GetTargetFilename("rg1.fits"), 
+                FileAccess.ReadWrite, 
+                FileShare.ReadWrite);
 
             Object[][] data = new Object[1][];
             data[0] = new Object[2];
             data[0][0] = pa;
             data[0][1] = fa;
 
-            System.Console.Out.WriteLine("***** Write header ******");
+            Console.Out.WriteLine("***** Write header ******");
             BasicHDU hdu = Fits.MakeHDU(data);
             Header hdr = hdu.Header;
 
@@ -32,7 +36,7 @@ namespace nom.tam.fits
             hdr.AddValue("GCOUNT", 20, "Number of groups");
             hdr.Write(bf);
 
-            System.Console.Out.WriteLine("***** Write data group by group ******");
+            Console.Out.WriteLine("***** Write data group by group ******");
             for (int i = 0; i < 20; i += 1)
             {
 
@@ -50,7 +54,6 @@ namespace nom.tam.fits
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
-                        ;
                         Console.WriteLine("i ,j value:" + i + "   " + j);
                     }
                 }
@@ -59,69 +62,89 @@ namespace nom.tam.fits
             }
 
             byte[] padding = new byte[FitsUtil.Padding(20*ArrayFuncs.ComputeSize(data))];
-            System.Console.Out.WriteLine("****** Write padding ******");
+            Console.Out.WriteLine("****** Write padding ******");
             bf.Write(padding);
 
             bf.Flush();
             bf.Close();
+            bf.Dispose();
 
-            System.Console.Out.WriteLine("****** Read data back in ******");
-            Fits f = new Fits("rg1.fits");
-            BasicHDU[] hdus = f.Read();
+            Fits f = null;
 
-            data = (Object[][]) hdus[0].Kernel;
-            // data = hdus[0].Kernel;
-            System.Console.Out.WriteLine("**** Check parameter and data info *****");
-            for (int i = 0; i < data.Length; i += 1)
+            try
             {
+                Console.Out.WriteLine("****** Read data back in ******");
+                f = new Fits(TestFileSetup.GetTargetFilename("rg1.fits"));
+                BasicHDU[] hdus = f.Read();
 
-                pa = (float[]) data[i][0];
-                // fa = (float[,]) data[i,1];
-                Array[] tfa = (Array[]) data[i][1];
-                for (int j = 0; j < pa.Length; j += 1)
+                data = (Object[][]) hdus[0].Kernel;
+                // data = hdus[0].Kernel;
+                Console.Out.WriteLine("**** Check parameter and data info *****");
+                for (int i = 0; i < data.Length; i += 1)
                 {
-                    Assert.AreEqual((float) (i + j), pa[j]);
+
+                    pa = (float[]) data[i][0];
+                    // fa = (float[,]) data[i,1];
+                    Array[] tfa = (Array[]) data[i][1];
+                    for (int j = 0; j < pa.Length; j += 1)
+                    {
+                        Assert.AreEqual((float) (i + j), pa[j]);
+                    }
+                    for (int j = 0; j < fa.Length; j += 1)
+                    {
+                        // Assert.AreEqual("dataTest:" + i + " " + j, (float)(i * j), fa[j,j]);
+                        Assert.AreEqual((float) (i * j), ((Array) tfa.GetValue(j)).GetValue(j));
+                    }
                 }
-                for (int j = 0; j < fa.Length; j += 1)
+
+                f.Close();
+
+                Console.Out.WriteLine("**** Create HDU from kernel *****");
+                f = new Fits();
+
+                // Generate a FITS HDU from the kernel.
+                f.AddHDU(Fits.MakeHDU(data));
+                bf = new BufferedFile(
+                    TestFileSetup.GetTargetFilename("rg2.fits"),
+                    FileAccess.ReadWrite,
+                    FileShare.ReadWrite);
+
+                Console.Out.WriteLine("**** Write new file *****");
+                f.Write(bf);
+                bf.Flush();
+                bf.Close();
+                bf.Dispose();
+                f.Close();
+
+                Console.Out.WriteLine("**** Read and check *****");
+                f = new Fits(TestFileSetup.GetTargetFilename("rg2.fits"));
+                data = (Object[][]) f.Read()[0].Kernel;
+
+                for (int i = 0; i < data.Length; i += 1)
                 {
-                    // Assert.AreEqual("dataTest:" + i + " " + j, (float)(i * j), fa[j,j]);
-                    Assert.AreEqual((float) (i*j), ((Array) tfa.GetValue(j)).GetValue(j));
+                    pa = (float[]) data[i][0];
+                    //   fa = (float[,]) data[i,1];
+                    Array[] tfa = (Array[]) data[i][1];
+
+                    for (int j = 0; j < pa.Length; j += 1)
+                    {
+                        Assert.AreEqual((float) (i + j), pa[j]);
+                    }
+
+                    for (int j = 0; j < fa.Length; j += 1)
+                    {
+                        //Assert.AreEqual("dataTest:" + i + " " + j, (float)(i * j), fa[j,j]);
+                        Assert.AreEqual((float) (i * j), ((Array) tfa.GetValue(j)).GetValue(j));
+                    }
                 }
             }
-
-            f = new Fits();
-
-            System.Console.Out.WriteLine("**** Create HDU from kernel *****");
-
-            // Generate a FITS HDU from the kernel.
-            f.AddHDU(Fits.MakeHDU(data));
-            bf = new BufferedFile("rg2.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
-            System.Console.Out.WriteLine("**** Write new file *****");
-            f.Write(bf);
-
-            bf.Flush();
-            bf.Close();
-
-            System.Console.Out.WriteLine("**** Read and check *****");
-            f = new Fits("rg2.fits");
-            data = (Object[][]) f.Read()[0].Kernel;
-            for (int i = 0; i < data.Length; i += 1)
+            finally
             {
-
-                pa = (float[]) data[i][0];
-                //   fa = (float[,]) data[i,1];
-                Array[] tfa = (Array[]) data[i][1];
-                for (int j = 0; j < pa.Length; j += 1)
+                if (f != null)
                 {
-                    Assert.AreEqual((float) (i + j), pa[j]);
-                }
-                for (int j = 0; j < fa.Length; j += 1)
-                {
-                    //Assert.AreEqual("dataTest:" + i + " " + j, (float)(i * j), fa[j,j]);
-                    Assert.AreEqual((float) (i*j), ((Array) tfa.GetValue(j)).GetValue(j));
+                    f.Close();
                 }
             }
         }
     }
 }
-

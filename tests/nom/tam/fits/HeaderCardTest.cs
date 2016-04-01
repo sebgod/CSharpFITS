@@ -43,8 +43,8 @@ namespace nom.tam.fits
             {
                 thrown = true;
             }
-            Assert.AreEqual(true, thrown);
 
+            Assert.AreEqual(true, thrown);
 
             p = new HeaderCard("COMMENT " + lng + lng);
             Assert.AreEqual(lng, p.Comment);
@@ -95,8 +95,8 @@ namespace nom.tam.fits
             {
                 thrown = true;
             }
-            Assert.AreEqual(true, thrown);
 
+            Assert.AreEqual(true, thrown);
         }
 
         [Test]
@@ -106,6 +106,7 @@ namespace nom.tam.fits
             HeaderCard hc;
             String key = "HIERARCH.TEST1.TEST2.INT";
             bool thrown = false;
+
             try
             {
                 hc = new HeaderCard(key, 123, "Comment");
@@ -114,6 +115,7 @@ namespace nom.tam.fits
             {
                 thrown = true;
             }
+
             Assert.AreEqual(true, thrown);
 
             String card = "HIERARCH TEST1 TEST2 INT=           123 / Comment                               ";
@@ -124,9 +126,7 @@ namespace nom.tam.fits
 
             FitsFactory.UseHierarch = true;
 
-
             hc = new HeaderCard(key, 123, "Comment");
-
             Assert.AreEqual(key, hc.Key);
             Assert.AreEqual("123", hc.Value);
             Assert.AreEqual("Comment", hc.Comment);

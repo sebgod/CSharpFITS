@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using CSharpFitsTests.util;
 using NUnit.Framework;
 using nom.tam.util;
 
@@ -22,7 +23,6 @@ namespace nom.tam.fits
         Array[] simg, iimg, limg, fimg, dimg;
         int[][][] img3;
         double[] img1;
-
 
         [Test]
         public void TestImage()
@@ -105,13 +105,16 @@ namespace nom.tam.fits
 
             Assert.AreEqual(f.NumberOfHDUs, 8);
 
-
             // Write a FITS file.
-            BufferedFile bf = new BufferedFile("image1.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
+            BufferedFile bf = new BufferedFile(
+                TestFileSetup.GetTargetFilename("image1.fits"),
+                FileAccess.ReadWrite,
+                FileShare.ReadWrite);
             f.Write(bf);
             bf.Flush();
             bf.Close();
-
+            bf.Dispose();
+            f.Close();
         }
 
         // Read a FITS file
@@ -119,18 +122,30 @@ namespace nom.tam.fits
         {
             Initialize();
 
-            Fits f = new Fits("image1.fits");
-            BasicHDU[] hdus = f.Read();
+            Fits f = null;
 
-            Assert.AreEqual(f.NumberOfHDUs, 8);
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bimg, hdus[0].Data.Kernel));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(simg, hdus[1].Data.Kernel));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(iimg, hdus[2].Data.Kernel));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(limg, hdus[3].Data.Kernel));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(fimg, hdus[4].Data.Kernel));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(dimg, hdus[5].Data.Kernel));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(img3, hdus[6].Data.Kernel));
-            Assert.AreEqual(true, ArrayFuncs.ArrayEquals(img1, hdus[7].Data.Kernel));
+            try
+            {
+                f = new Fits(TestFileSetup.GetTargetFilename("image1.fits"));
+                BasicHDU[] hdus = f.Read();
+
+                Assert.AreEqual(f.NumberOfHDUs, 8);
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(bimg, hdus[0].Data.Kernel));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(simg, hdus[1].Data.Kernel));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(iimg, hdus[2].Data.Kernel));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(limg, hdus[3].Data.Kernel));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(fimg, hdus[4].Data.Kernel));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(dimg, hdus[5].Data.Kernel));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(img3, hdus[6].Data.Kernel));
+                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(img1, hdus[7].Data.Kernel));
+            }
+            finally
+            {
+                if (f != null)
+                {
+                    f.Close();
+                }
+            }
         }
     }
 }

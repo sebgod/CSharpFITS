@@ -265,7 +265,6 @@ namespace nom.tam.util
                     bp.Skip(1);
                 }
             }
-
         }
 
         [Test]
@@ -287,7 +286,6 @@ namespace nom.tam.util
             flt[4] = float.PositiveInfinity;
             flt[5] = float.NegativeInfinity;
 
-
             bf.TruncationThrow = false;
             bf.Align = true;
 
@@ -303,7 +301,6 @@ namespace nom.tam.util
                     offset = bf.format("\n", buffer, offset, 1);
                 }
             }
-
 
             bp.Offset = 0;
 
@@ -355,7 +352,6 @@ namespace nom.tam.util
             dbl[4] = Double.PositiveInfinity;
             dbl[5] = Double.NegativeInfinity;
 
-
             bf.TruncationThrow = false;
             bf.Align = true;
             offset = 0;
@@ -370,11 +366,9 @@ namespace nom.tam.util
                 }
             }
 
-
             bp.Offset = 0;
             for (int i = 0; i < dbl.Length; i += 1)
             {
-
                 double chk = bp.GetDouble(25);
 
                 double dx = Math.Abs(chk - dbl[i]);
