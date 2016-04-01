@@ -30,7 +30,6 @@ namespace nom.tam.fits
         [TestFixtureSetUp]
         public void Initialize()
         {
-
             for (int i = 0; i < bits.Length; i++)
             {
                 bits[i] = new byte[2];
@@ -45,6 +44,7 @@ namespace nom.tam.fits
             {
                 floats[i] = new float[4][];
             }
+
             for (int i = 0; i < floats.Length; i++)
             {
                 for (int j = 0; j < floats[i].Length; j++)
@@ -118,7 +118,6 @@ namespace nom.tam.fits
             f.Read();
 
             Assert.AreEqual(2, f.NumberOfHDUs);
-
 
             BinaryTableHDU thdu = (BinaryTableHDU) f.GetHDU(1);
             Header hdr = thdu.Header;
@@ -330,8 +329,10 @@ namespace nom.tam.fits
         {
             Fits f = new Fits("bt2.fits", FileAccess.Read);
             f.Read();
+
             BinaryTableHDU bhdu = (BinaryTableHDU) f.GetHDU(1);
             Header hdr = bhdu.Header;
+
             BinaryTable btab = (BinaryTable) bhdu.Data;
             for (int i = 0; i < 50; i += 1)
             {
@@ -345,22 +346,24 @@ namespace nom.tam.fits
 
             f = new Fits();
             f.AddHDU(Fits.MakeHDU(btab));
+
             BufferedFile bf = new BufferedFile("bt4.fits", FileAccess.ReadWrite, FileShare.ReadWrite);
             f.Write(bf);
+            
             bf.Flush();
             bf.Close();
 
             f = new Fits("bt4.fits", FileAccess.Read);
-
             btab = (BinaryTable) f.GetHDU(1).Data;
-            Assert.AreEqual(100, btab.nRow);
+            Assert.AreEqual(100, btab.NRows);
 
             // Try getting data before we Read in the table.
-
             Array[] xf = (Array[]) btab.GetColumn(0);
             Array[] xft = (Array[]) xf.GetValue(50);
             float[] xftt = (float[]) xft.GetValue(0);
+
             Assert.AreEqual((float) 0, (float) xftt[0]);
+            
             xft = (Array[]) xf.GetValue(99);
             xftt = (float[]) xft.GetValue(0);
             Assert.AreEqual((float) (49*Math.Sin(49)), (float) xftt[0]);
@@ -375,6 +378,7 @@ namespace nom.tam.fits
                 Assert.AreEqual(true, ArrayFuncs.ArrayEquals(ba, vbool[trow])); // prob 1
                 Assert.AreEqual(true, ArrayFuncs.ArrayEquals(fx, vf[trow]));
             }
+
             // Fill the table.
             Data data = f.GetHDU(1).Data;
 

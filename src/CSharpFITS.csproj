@@ -40,7 +40,7 @@
     <OutputPath>.\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\CSharpFITS.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,10 +51,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.2.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>packages\NUnit.3.2.0\lib\net40\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -114,20 +110,6 @@
     <Compile Include="src\nom\tam\util\TableException.cs" />
     <Compile Include="src\nom\tam\util\Troolean.cs" />
     <Compile Include="src\nom\tam\util\TruncationException.cs" />
-    <Compile Include="tests\nom\tam\fits\AsciiTableTest.cs" />
-    <Compile Include="tests\nom\tam\fits\BinaryTableTest.cs" />
-    <Compile Include="tests\nom\tam\fits\FitsCopyTest.cs" />
-    <Compile Include="tests\nom\tam\fits\FitsReaderTest.cs" />
-    <Compile Include="tests\nom\tam\fits\HeaderCardTest.cs" />
-    <Compile Include="tests\nom\tam\fits\HeaderTest.cs" />
-    <Compile Include="tests\nom\tam\fits\ImageTest.cs" />
-    <Compile Include="tests\nom\tam\fits\RandomGroupsTest.cs" />
-    <Compile Include="tests\nom\tam\fits\TestDate.cs" />
-    <Compile Include="tests\nom\tam\fits\TilerTest.cs" />
-    <Compile Include="tests\nom\tam\util\ArrayFuncsTester.cs" />
-    <Compile Include="tests\nom\tam\util\BufferedFileTester.cs" />
-    <Compile Include="tests\nom\tam\util\ByteFormatParseTester.cs" />
-    <Compile Include="tests\nom\tam\util\HashedListTester.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -140,9 +122,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

@@ -11,7 +11,7 @@ namespace nom.tam.fits
         [Test]
         public void TestFitsCopy( /*String[] args*/)
         {
-            String file = @"\tests\resources\nom\tam\fits\test\test_dup.fits";
+            String file = @"C:\SourceCode\SidWatch\CSharpFITS\src\tests\resources\nom\tam\fits\test\test_dup.fits";
 
             Fits f = new Fits(file);
             int i = 0;
