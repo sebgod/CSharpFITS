@@ -70,25 +70,35 @@ namespace nom.tam.fits
 
         public void CreateByColumn()
         {
-            Fits f = MakeAsciiTable();
-            WriteFile(f, TestFileSetup.GetTargetFilename("at1.fits"));
+            Fits f = null;
 
-            System.Console.Out.WriteLine("\n\n**** Create a table column by Column ****");
-
-            f = new Fits(TestFileSetup.GetTargetFilename("at1.fits"), FileAccess.Read);
-            AsciiTableHDU hdu = (AsciiTableHDU) f.GetHDU(1);
-
-            Object[] inputs = GetSampleCols();
-            Object[] outputs = (Object[]) hdu.Kernel;
-
-            for (int i = 0; i < 50; i += 1)
+            try
             {
-                ((String[]) outputs[4])[i] = ((String[]) outputs[4])[i].Trim();
+                f = MakeAsciiTable();
+                WriteFile(f, TestFileSetup.GetTargetFilename("at1.fits"));
+
+                System.Console.Out.WriteLine("\n\n**** Create a table column by Column ****");
+
+                f = new Fits(TestFileSetup.GetTargetFilename("at1.fits"), FileAccess.Read);
+                AsciiTableHDU hdu = (AsciiTableHDU) f.GetHDU(1);
+
+                Object[] inputs = GetSampleCols();
+                Object[] outputs = (Object[]) hdu.Kernel;
+
+                for (int i = 0; i < 50; i += 1)
+                {
+                    ((String[]) outputs[4])[i] = ((String[]) outputs[4])[i].Trim();
+                }
+
+                for (int j = 0; j < 5; j += 1)
+                {
+                    Assert.AreEqual(true,
+                        ArrayFuncs.ArrayEquals(inputs[j], outputs[j], Math.Pow(10, -6), Math.Pow(10, -14)));
+                }
             }
-
-            for (int j = 0; j < 5; j += 1)
+            finally
             {
-                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(inputs[j], outputs[j], Math.Pow(10, -6), Math.Pow(10, -14)));
+                f.Close();
             }
         }
 
@@ -111,48 +121,59 @@ namespace nom.tam.fits
 
         public void CreateByRow()
         {
-            Fits f = new Fits();
-            AsciiTable data = new AsciiTable();
-            Object[] row = new Object[4];
+            Fits f = null;
 
-            System.Console.Out.WriteLine("\n\n**** Create a table column by Row ****");
-
-            for (int i = 0; i < 50; i += 1)
+            try
             {
-                data.AddRow(GetRow(i));
-            }
+                f = new Fits();
+                AsciiTable data = new AsciiTable();
+                Object[] row = new Object[4];
 
-            f.AddHDU(Fits.MakeHDU(data));
+                System.Console.Out.WriteLine("\n\n**** Create a table column by Row ****");
 
-            WriteFile(f, TestFileSetup.GetTargetFilename("at2.fits"));
-
-            // Read it back.
-            f = new Fits(TestFileSetup.GetTargetFilename("at2.fits"), FileAccess.Read);
-
-            Object[] output = (Object[]) f.GetHDU(1).Kernel;
-            Object[] input = GetRowBlock(50);
-
-            for (int i = 0; i < 50; i += 1)
-            {
-                String[] str = (String[]) output[2];
-                String[] istr = (String[]) input[2];
-                int len1 = str[1].Length;
-                str[i] = str[i].Trim();
-                // The first row would have set the length for all the
-                // remaining rows...
-                if (istr[i].Length > len1)
+                for (int i = 0; i < 50; i += 1)
                 {
-                    istr[i] = istr[i].Substring(0, len1);
+                    data.AddRow(GetRow(i));
+                }
+
+                f.AddHDU(Fits.MakeHDU(data));
+
+                WriteFile(f, TestFileSetup.GetTargetFilename("at2.fits"));
+                f.Close();
+
+                // Read it back.
+                f = new Fits(TestFileSetup.GetTargetFilename("at2.fits"), FileAccess.Read);
+
+                Object[] output = (Object[]) f.GetHDU(1).Kernel;
+                Object[] input = GetRowBlock(50);
+
+                for (int i = 0; i < 50; i += 1)
+                {
+                    String[] str = (String[]) output[2];
+                    String[] istr = (String[]) input[2];
+                    int len1 = str[1].Length;
+                    str[i] = str[i].Trim();
+                    // The first row would have set the length for all the
+                    // remaining rows...
+                    if (istr[i].Length > len1)
+                    {
+                        istr[i] = istr[i].Substring(0, len1);
+                    }
+                }
+
+                for (int j = 0; j < 3; j += 1)
+                {
+                    Assert.AreEqual(true,
+                        ArrayFuncs.ArrayEquals(input[j], output[j], Math.Pow(10, -6), Math.Pow(10, -14)));
                 }
             }
-
-            f.Close();
-
-            for (int j = 0; j < 3; j += 1)
+            finally
             {
-                Assert.AreEqual(true, ArrayFuncs.ArrayEquals(input[j], output[j], Math.Pow(10, -6), Math.Pow(10, -14)));
+                if (f != null)
+                {
+                    f.Close();
+                }
             }
-
         }
 
         public void ReadByRow()
