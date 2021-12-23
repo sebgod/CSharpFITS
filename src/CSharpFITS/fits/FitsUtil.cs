@@ -2,18 +2,17 @@ namespace nom.tam.fits
 {
  /*
   * Copyright: Thomas McGlynn 1997-2007.
-  * 
+  *
   * The CSharpFITS package is a C# port of Tom McGlynn's
   * nom.tam.fits Java package, initially ported by  Samuel Carliles
   *
-  * Copyright: 2007 Virtual Observatory - India.   
+  * Copyright: 2007 Virtual Observatory - India.
   *
   * Use is subject to license terms
   */
 
     using System;
     using System.IO;
-    using System.Security.Policy;
     using System.Net;
     using System.Collections;
     using nom.tam.util;
@@ -35,7 +34,7 @@ namespace nom.tam.fits
 			{
 				throw new FitsException("Invalid attempt to reposition stream " + o + " of type " + o.GetType().FullName + " to " + offset);
 			}
-			
+
 			try
 			{
 				((RandomAccess)o).Seek(offset, SeekOrigin.Begin);
@@ -45,7 +44,7 @@ namespace nom.tam.fits
 				throw new FitsException("Unable to repostion stream " + o + " of type " + o.GetType().FullName + " to " + offset + "   Exception:" + e);
 			}
 		}
-		
+
 		/// <summary>Find out where we are in a random access file</summary>
 		public static long FindOffset(Object o)
 		{
@@ -59,7 +58,7 @@ namespace nom.tam.fits
 				return - 1;
 			}
 		}
-		
+
 		/// <summary>How many bytes are needed to fill the last 2880 block?</summary>
 		public static int Padding(int size)
 		{
@@ -70,7 +69,7 @@ namespace nom.tam.fits
 			}
 			return mod;
 		}
-		
+
         /// <summary>How many bytes are needed to fill the last 2880 block?</summary>
         public static int Padding(long size)
         {
@@ -81,19 +80,19 @@ namespace nom.tam.fits
             }
             return mod;
         }
-    		
+
         /// <summary>Total size of blocked FITS element</summary>
 		public static int AddPadding(int size)
 		{
 			return size + Padding(size);
 		}
 
-        // change suggested in .99 version: 
+        // change suggested in .99 version:
         /// <summary>Check if a file seems to be compressed.</summary>
 		public static bool IsCompressed(String filename)
 		{
             FileStream fis = null;
-            // check if filename is an url. 
+            // check if filename is an url.
             // Required because FileInfo dosent take uri as parameter,
             // and throws argument exception.
             String lc = filename.ToLower();
@@ -104,7 +103,7 @@ namespace nom.tam.fits
                     // This seems to be a URL.hence get filename of the url to be passed to FileInfo constructor
                     int filelen = filename.Length;
                     return (filelen > 2 && (filename.Substring(filelen - 3, 3).ToLower().Equals(".gz")));
-                    
+
                 }
             }
             try
@@ -148,14 +147,14 @@ namespace nom.tam.fits
             int len = filename.Length;
             return (len > 2 && (filename.Substring(len - 3, 3).ToLower().Equals(".gz")));
         }
-		
+
 		/// <summary>Get the maximum length of a String in a String array.</summary>
 		public static int MaxLength(String[] o)
 		{
 			int max = 0;
 			for (int i = 0; i < o.Length; i += 1)
 			{
-                // change suggested in .99.2 version: 
+                // change suggested in .99.2 version:
                 // looked for nulls in the array pointer rather than the individual strings.
                 if (o[i] != null && o[i].Length > max)
 				{
@@ -164,7 +163,7 @@ namespace nom.tam.fits
 			}
 			return max;
 		}
-		
+
 		/// <summary>Copy an array of Strings to bytes.</summary>
 		public static byte[] StringsToByteArray(String[] o, int maxLen)
 		{
@@ -195,7 +194,7 @@ namespace nom.tam.fits
 			}
 			return res;
 		}
-		
+
 		/// <summary>Convert bytes to Strings</summary>
 		public static String[] ByteArrayToStrings(byte[] o, int maxLen)
 		{
@@ -209,8 +208,8 @@ namespace nom.tam.fits
 			}
 			return res;
 		}
-		
-		
+
+
 		/// <summary>Convert an array of booleans to bytes</summary>
 		internal static byte[] BooleanToByte(bool[] bool_Renamed)
 		{
@@ -226,7 +225,7 @@ namespace nom.tam.fits
 		internal static bool[] ByteToBoolean(byte[] byt)
 		{
 			bool[] bool_Renamed = new bool[byt.Length];
-			
+
 			for(int i = 0; i < byt.Length; i += 1)
 			{
 				bool_Renamed[i] = (byt[i] == (byte)'T');
@@ -253,7 +252,7 @@ namespace nom.tam.fits
 
             /* To remove error "The remote server returned an error: (404) Not Found."
              * Reads the Internet Explorer nondynamic proxy settings
-             * NOTE: This method is now obsolete. 
+             * NOTE: This method is now obsolete.
              * TO_DO :need to find the substitute method for this. */
 
             request.Proxy = WebProxy.GetDefaultProxy();

@@ -7,7 +7,7 @@ namespace nom.tam.fits
     * The CSharpFITS package is a C# port of Tom McGlynn's
     * nom.tam.fits Java package, initially ported by  Samuel Carliles
     *
-    * Copyright: 2007 Virtual Observatory - India.    
+    * Copyright: 2007 Virtual Observatory - India.
     *
     * Use is subject to license terms
     */
@@ -75,12 +75,12 @@ namespace nom.tam.fits
 		{
 			return new BinaryTable(header);
 		}
-		
+
 		internal override Data ManufactureData()
 		{
 			return ManufactureData(myHeader);
 		}
-		
+
 		/// <summary>Build a binary table HDU from the supplied data.</summary>
 		/// <param name="data">the array used to build the binary table.</param>
         /// <exception cref="FitsException"> If there was a problem with the data.</exception>
@@ -90,7 +90,7 @@ namespace nom.tam.fits
 			data.FillHeader(hdr);
 			return hdr;
 		}
-		
+
 		/// <summary>Encapsulate data in a BinaryTable data type</summary>
 		public static Data Encapsulate(Object o)
 		{
@@ -111,7 +111,7 @@ namespace nom.tam.fits
 				throw new FitsException("Unable to encapsulate object of type:" + o.GetType().FullName + " as BinaryTable");
 			}
 		}
-		
+
 		/// <summary>Check that this is a valid binary table header.</summary>
 		/// <param name="header">to validate.</param>
 		/// <returns> <CODE>true</CODE> if this is a binary table header.</returns>
@@ -132,8 +132,8 @@ namespace nom.tam.fits
 				return false;
 			}
 		}
-		
-		
+
+
         /// <summary>Check if this data object is consistent with a binary table.  There
 		/// are three options:  a column table object, an Object[][], or an Object[].
 		/// This routine doesn't check that the dimensions of arrays are properly
@@ -149,13 +149,13 @@ namespace nom.tam.fits
 				return false;
 			}
 		}
-		
+
 		/// <summary>Add a column without any associated header information.</summary>
 		/// <param name="data">The column data to be added.  Data should be an Object[] where
 		/// type of all of the constituents is identical.  The length
 		/// of data should match the other columns.  <b> Note:</b> It is
 		/// valid for data to be a 2 or higher dimensionality primitive
-		/// array.  In this case the column index is the first 
+		/// array.  In this case the column index is the first
 		/// index of the array.  E.g., if called with int[30][20][10], the
 		/// number of rows in the table should be 30 and this column
 		/// will have elements which are 2-d integer arrays with TDIM = (10,20).
@@ -167,7 +167,7 @@ namespace nom.tam.fits
 			table.PointToColumn(NCols - 1, myHeader);
 			return col;
 		}
-		
+
         /// <summary>Need to tell header about the Heap before writing.</summary>
 		public override void Write(ArrayDataIO ado)
 		{
@@ -176,7 +176,7 @@ namespace nom.tam.fits
 			{
 				myHeader.AddValue("PCOUNT", table.HeapSize, "Includes Heap");
 			}
-			
+
 			if (myHeader.GetIntValue("PCOUNT") == 0)
 			{
 				myHeader.DeleteKey("THEAP");
@@ -187,10 +187,10 @@ namespace nom.tam.fits
 				int offset = myHeader.GetIntValue("NAXIS1") * myHeader.GetIntValue("NAXIS2") + table.HeapOffset;
 				myHeader.AddValue("THEAP", offset, "");
 			}
-			
+
 			base.Write(ado);
 		}
-		
+
 		/// <summary>Print out some information about this HDU.</summary>
 		public override void Info()
 		{
@@ -198,14 +198,14 @@ namespace nom.tam.fits
 
             Console.Out.WriteLine("  Binary Table");
 			Console.Out.WriteLine("      Header Information:");
-			
+
 			int nhcol = myHeader.GetIntValue("TFIELDS", - 1);
 			int nrow = myHeader.GetIntValue("NAXIS2", - 1);
 			int rowsize = myHeader.GetIntValue("NAXIS1", - 1);
-			
+
 			Console.Out.Write("          " + nhcol + " fields");
 			Console.Out.WriteLine(", " + nrow + " rows of length " + rowsize);
-			
+
 			for (int i = 1; i <= nhcol; i += 1)
 			{
 				Console.Out.Write("           " + i + ":");
@@ -214,7 +214,7 @@ namespace nom.tam.fits
 				PrtField("Dimens", "TDIM" + i);
 				Console.Out.WriteLine(" ");
 			}
-			
+
 			Console.Out.WriteLine("      Data Information:");
 			if (myData == null || table.NRows == 0 || table.NCols == 0)
 			{
