@@ -22,7 +22,7 @@ jobs:
       run: dotnet restore
       working-directory: src
     - name: Build
-      run: dotnet build -c Release --no-restore --version-suffix +${{ github.sha }}
+      run: dotnet build -c Release --no-restore --version-suffix +${{ github.sha }} -p:VersionPrefix=2.0.$BUILD_NUMBER -p:FileVersion=2.0.0.$BUILD_NUMBER
       working-directory: src
     - name: Push NuGet package
       run: dotnet nuget push **/*.nupkg -s nuget.org -k ${{ secrets.NUGET_API_KEY }}
