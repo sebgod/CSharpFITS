@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpFITS", "CSharpFITS\CSharpFITS.csproj", "{B83BB7A9-5CC2-4B6B-8DCF-781C8E6E26BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETStdFITS", "NETStdFITS\NETStdFITS.csproj", "{B83BB7A9-5CC2-4B6B-8DCF-781C8E6E26BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,9 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B83BB7A9-5CC2-4B6B-8DCF-781C8E6E26BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -30,5 +27,11 @@ Global
 		{B83BB7A9-5CC2-4B6B-8DCF-781C8E6E26BB}.Release|x64.Build.0 = Release|Any CPU
 		{B83BB7A9-5CC2-4B6B-8DCF-781C8E6E26BB}.Release|x86.ActiveCfg = Release|Any CPU
 		{B83BB7A9-5CC2-4B6B-8DCF-781C8E6E26BB}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69E3FDA2-0E69-4452-8E6E-7D367A6AEA65}
 	EndGlobalSection
 EndGlobal
