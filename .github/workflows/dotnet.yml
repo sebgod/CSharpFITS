@@ -22,9 +22,9 @@ jobs:
       run: dotnet restore
       working-directory: src
     - name: Build
-      run: dotnet build -c Release --no-restore
+      run: dotnet build -c Release --no-restore --version-suffix +${{ github.sha }}
       working-directory: src
     - name: Push NuGet package
-      run: dotnet nuget push **/*.nupkg -s nuget.org -k ${{ secrets.NUGET_API_KEY }} --version-suffix +${{ github.sha }}
+      run: dotnet nuget push **/*.nupkg -s nuget.org -k ${{ secrets.NUGET_API_KEY }}
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
