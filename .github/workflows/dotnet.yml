@@ -22,7 +22,9 @@ jobs:
       run: dotnet restore
       working-directory: src
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build -c Release --no-restore
       working-directory: src
+    - name: Push NuGet package
+      run: dotnet nuget push -s nuget.org -k ${{ secrets.NUGET_API_KEY }}
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
