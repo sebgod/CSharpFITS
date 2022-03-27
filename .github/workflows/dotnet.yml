@@ -5,6 +5,9 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+    
+env:
+  PKG_VERSION: 2.${{ github.run_number }}.${{ github.run_attempt }}
 
 jobs:
   build:
@@ -17,12 +20,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
-        working-directory: src
     - name: Restore dependencies
       run: dotnet restore
       working-directory: src
     - name: Build
-      run: dotnet build -c Release --no-restore --version-suffix +${{ github.sha }} -p:VersionPrefix=2.${{ github.run_number }}.${{ github.run_attempt }} -p:FileVersion=2.0.${{ github.run_number }}.${{ github.run_attempt }}
+      run: dotnet build -c Release --no-restore --version-suffix +${{ github.sha }} -p:VersionPrefix=$PKG_VERSION -p:FileVersion=${PKG_VERSION}.0
       working-directory: src
     - name: Push NuGet package
       run: dotnet nuget push **/*.nupkg -s nuget.org -k ${{ secrets.NUGET_API_KEY }}
