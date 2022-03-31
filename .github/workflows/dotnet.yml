@@ -26,7 +26,10 @@ jobs:
     - name: Build
       run: dotnet build -c Release --no-restore --version-suffix +${{ github.sha }} -p:VersionPrefix=$PKG_VERSION -p:FileVersion=${PKG_VERSION}.0
       working-directory: src
+  
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Push NuGet package
       run: dotnet nuget push **/*.nupkg -s nuget.org -k ${{ secrets.NUGET_API_KEY }}
-#    - name: Test
-#      run: dotnet test --no-build --verbosity normal
