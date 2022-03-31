@@ -26,10 +26,20 @@ jobs:
     - name: Build
       run: dotnet build -c Release --no-restore --version-suffix +${{ github.sha }} -p:VersionPrefix=$PKG_VERSION -p:FileVersion=${PKG_VERSION}.0
       working-directory: src
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-packages
+        path: '**/*.nupkg'
+        retention-days: 5
   
   publish:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Download NuGet packages
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-packages
     - name: Push NuGet package
-      run: dotnet nuget push **/*.nupkg -s nuget.org -k ${{ secrets.NUGET_API_KEY }}
+      run: dotnet nuget push  -s nuget.org -k ${{ secrets.NUGET_API_KEY }}
