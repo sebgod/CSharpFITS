@@ -8,6 +8,7 @@ on:
     
 env:
   PKG_VERSION: 2.20.${{ github.run_number }}${{ github.run_attempt }}
+  BUILD_CONF: Release
 
 jobs:
   build:
@@ -24,9 +25,9 @@ jobs:
       run: dotnet restore
       working-directory: src
     - name: Build
-      run: dotnet build -c Release --no-restore --version-suffix +${{ github.sha }} -p:VersionPrefix=$PKG_VERSION -p:FileVersion=${PKG_VERSION}.0
+      run: dotnet build -c $BUILD_CONF --no-restore --version-suffix +${{ github.sha }} -p:VersionPrefix=$PKG_VERSION -p:FileVersion=${PKG_VERSION}.0
       working-directory: src
-    - name: 'Upload Artifact'
+    - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: nuget-packages
