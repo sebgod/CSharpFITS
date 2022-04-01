@@ -139,7 +139,9 @@ namespace nom.tam.fits
                     }
                     catch (IOException e)
                     {
+#if DEBUG
                         System.Console.Out.WriteLine("Exception: " + e);
+#endif
                     }
                 }
             }

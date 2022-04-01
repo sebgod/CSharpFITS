@@ -7,14 +7,14 @@ namespace nom.tam.fits
    * The CSharpFITS package is a C# port of Tom McGlynn's
    * nom.tam.fits Java package, initially ported by  Samuel Carliles
    *
-   * Copyright: 2007 Virtual Observatory - India.   
+   * Copyright: 2007 Virtual Observatory - India.
    *
    * Use is subject to license terms
    */
     using System;
     using System.Collections;
 	using nom.tam.util;
-	
+
     /// <summary>Random groups HDUs.  Note that the internal storage of random
 	/// groups is a Object[ngroup][2] array.  The first element of
 	/// each group is the parameter data from that group.  The second element
@@ -34,7 +34,7 @@ namespace nom.tam.fits
             return true;
           }
         }
-    		
+
         /// <summary>Move a RandomGroupsHDU to or from the beginning
 		/// of a FITS file.  Note that the FITS standard only
 		/// supports Random Groups data at the beginning
@@ -50,7 +50,9 @@ namespace nom.tam.fits
 				}
 				catch(FitsException)
 				{
+#if DEBUG
 					Console.Error.WriteLine("Unreachable catch in RandomGroupsHDU");
+#endif
 				}
 				if (value)
 				{
@@ -80,7 +82,7 @@ namespace nom.tam.fits
 			myHeader = h;
 			myData = d;
 		}
-		
+
 		/// <summary>Make a header point to the given object.</summary>
 		/// <param name="odata">The random groups data the header should describe.</param>
 		internal static Header ManufactureHeader(Data d)
@@ -93,7 +95,7 @@ namespace nom.tam.fits
 			d.FillHeader(h);
 			return h;
 		}
-		
+
 		/// <summary>Is this a random groups header?</summary>
 		/// <param name="myHeader">The header to be tested.</param>
 		public static new bool IsHeader(Header hdr)
@@ -102,13 +104,13 @@ namespace nom.tam.fits
 			{
 				return hdr.GetBooleanValue("GROUPS");
 			}
-			
+
 			String s = hdr.GetStringValue("XTENSION");
 			if (s.Trim().Equals("IMAGE"))
 			{
 				return hdr.GetBooleanValue("GROUPS");
 			}
-			
+
 			return false;
 		}
 
@@ -175,27 +177,27 @@ namespace nom.tam.fits
 
             return false;
 		}
-		
+
 		/// <summary>Create a FITS Data object corresponding to this HDU header.</summary>
 		internal override Data ManufactureData()
 		{
 			return ManufactureData(myHeader);
 		}
-		
+
 		/// <summary>Create FITS data object corresponding to a given header.</summary>
 		public static Data ManufactureData(Header hdr)
 		{
 			int gcount = hdr.GetIntValue("GCOUNT", - 1);
 			int pcount = hdr.GetIntValue("PCOUNT", - 1);
-			
+
 			if (!hdr.GetBooleanValue("GROUPS") || hdr.GetIntValue("NAXIS1", - 1) != 0 || gcount < 0 || pcount < 0 || hdr.GetIntValue("NAXIS") < 2)
 			{
 				throw new FitsException("Invalid Random Groups Parameters");
 			}
-			
+
 			// Allocate the object.
 			Object[][] dataArray;
-			
+
 			if (gcount > 0)
 			{
 				dataArray = new Object[gcount][];
@@ -208,7 +210,7 @@ namespace nom.tam.fits
 			{
 				dataArray = new Object[0][];
 			}
-			
+
 			Object[] sampleRow = GenerateSampleRow(hdr);
 			for (int i = 0; i < gcount; i += 1)
 			{
@@ -217,16 +219,16 @@ namespace nom.tam.fits
 			}
 			return new RandomGroupsData(dataArray);
 		}
-		
+
 		internal static Object[] GenerateSampleRow(Header h)
 		{
 			int ndim = h.GetIntValue("NAXIS", 0) - 1;
 			int[] dims = new int[ndim];
-			
+
 			int bitpix = h.GetIntValue("BITPIX", 0);
-			
+
 			Type baseClass;
-			
+
 			switch (bitpix)
 			{
 				case 8:
@@ -247,10 +249,10 @@ namespace nom.tam.fits
 				case - 64:
 					baseClass = typeof(double);
                       break;
-				default: 
+				default:
 					throw new FitsException("Invalid BITPIX:" + bitpix);
 			}
-			
+
 			// Note that we have to invert the order of the axes
 			// for the FITS file to get the order in the array we
 			// are generating.  Also recall that NAXIS1=0, so that
@@ -264,14 +266,14 @@ namespace nom.tam.fits
 				}
 				dims[ndim - i - 1] = (int) cdim;
 			}
-			
+
 			Object[] sample = new Object[2];
 			sample[0] = ArrayFuncs.NewInstance(baseClass, h.GetIntValue("PCOUNT"));
 			sample[1] = ArrayFuncs.NewInstance(baseClass, dims);
-			
+
 			return sample;
 		}
-		
+
 		public static Data Encapsulate(Object o)
 		{
             if (o is Object[][])// ArrayFuncs.CountDimensions(o) == 2)
@@ -284,8 +286,8 @@ namespace nom.tam.fits
 				throw new FitsException("Attempt to encapsulate invalid data in Random Group");
 			}
 		}
-		
-		
+
+
 		/// <summary>Display structural information about the current HDU.</summary>
 		public override void Info()
 		{
@@ -321,7 +323,7 @@ namespace nom.tam.fits
 					data = null;
 				}
 			}
-			
+
 			//if(data == null || data.Length < 1 || data[0].Length != 2)
             if(data == null || data.Length < 1 || data.GetLength(1) != 2)
 			{

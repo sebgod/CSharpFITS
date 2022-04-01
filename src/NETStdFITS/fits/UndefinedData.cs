@@ -7,7 +7,7 @@ namespace nom.tam.fits
    * The CSharpFITS package is a C# port of Tom McGlynn's
    * nom.tam.fits Java package, initially ported by  Samuel Carliles
    *
-   * Copyright: 2007 Virtual Observatory - India.   
+   * Copyright: 2007 Virtual Observatory - India.
    *
    * Use is subject to license terms
    */
@@ -28,7 +28,7 @@ namespace nom.tam.fits
 			{
 				return (int) byteSize;
 			}
-			
+
 		}
 		/// <summary>Return the actual data.
 		/// Note that this may return a null when
@@ -54,13 +54,13 @@ namespace nom.tam.fits
 						return null;
 					}
 				}
-				
+
 				return data;
 			}
 		}
     #endregion
 
-		/// <summary>The size of the data 
+		/// <summary>The size of the data
 		/// </summary>
 		internal long byteSize;
 
@@ -73,7 +73,7 @@ namespace nom.tam.fits
         /// <param name="h"></param>
 		public UndefinedData(Header h)
 		{
-			
+
 			int size = 1;
 			for (int i = 0; i < h.GetIntValue("NAXIS"); i += 1)
 			{
@@ -85,7 +85,7 @@ namespace nom.tam.fits
 				size *= h.GetIntValue("GCOUNT");
 			}
 			size *= System.Math.Abs(h.GetIntValue("BITPIX") / 8);
-			
+
 			data = new byte[size];
 			byteSize = size;
 		}
@@ -93,7 +93,7 @@ namespace nom.tam.fits
     /// <summary>Create an UndefinedData object using the specified object.</summary>
 		public UndefinedData(Object x)
 		{
-			
+
 			byteSize = ArrayFuncs.ComputeSize(x);
 			data = new byte[(int) byteSize];
 		}
@@ -102,7 +102,7 @@ namespace nom.tam.fits
 		/// <summary>Fill header with keywords that describe data.
 		/// </summary>
 		/// <param name="head">The FITS header
-		/// 
+		///
 		/// </param>
 		internal override void FillHeader(Header head)
 		{
@@ -118,7 +118,9 @@ namespace nom.tam.fits
 			}
 			catch (HeaderCardException e)
 			{
+#if DEBUG
 				System.Console.Error.WriteLine("Unable to create unknown header:" + e);
+#endif
 			}
 		}
         /// <summary>
@@ -128,7 +130,7 @@ namespace nom.tam.fits
         public override void Read(ArrayDataIO i)
 		{
 			SetFileOffset(i);
-			
+
 			if (i is RandomAccess)
 			{
 				try
@@ -156,7 +158,7 @@ namespace nom.tam.fits
 					throw new FitsException("Unable to read unknown data:" + e);
 				}
 			}
-			
+
 			int pad = FitsUtil.Padding(TrueSize);
 			try
 			{
@@ -186,12 +188,12 @@ namespace nom.tam.fits
 			{
 				Object generatedAux = DataArray;
 			}
-			
+
 			if (data == null)
 			{
 				throw new FitsException("Null unknown data");
 			}
-			
+
 			try
 			{
 				o.Write(data);
@@ -200,7 +202,7 @@ namespace nom.tam.fits
 			{
 				throw new FitsException("IO Error on unknown data write" + e);
 			}
-			
+
 			byte[] padding = new byte[FitsUtil.Padding(TrueSize)];
 			try
 			{

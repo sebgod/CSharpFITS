@@ -6,11 +6,11 @@ namespace nom.tam.fits
 {
     /*
   * Copyright: Thomas McGlynn 1997-2007.
-  * 
+  *
   * The CSharpFITS package is a C# port of Tom McGlynn's
   * nom.tam.fits Java package, initially ported by  Samuel Carliles
   *
-  * Copyright: 2007 Virtual Observatory - India. 
+  * Copyright: 2007 Virtual Observatory - India.
   *
   * Use is subject to license terms
   */
@@ -703,7 +703,9 @@ namespace nom.tam.fits
                         }
                         catch (TruncationException)
                         {
+#if DEBUG
                             Console.Error.WriteLine("Ignoring truncation error:" + i + "," + j);
+#endif
                         }
                     }
                 }
@@ -867,7 +869,9 @@ namespace nom.tam.fits
             }
             catch (HeaderCardException e)
             {
+#if DEBUG
                 Console.Error.WriteLine("ImpossibleException in fillHeader:" + e);
+#endif
             }
         }
 

@@ -7,7 +7,7 @@ namespace nom.tam.fits
     * The CSharpFITS package is a C# port of Tom McGlynn's
     * nom.tam.fits Java package, initially ported by  Samuel Carliles
     *
-    * Copyright: 2007 Virtual Observatory - India.    
+    * Copyright: 2007 Virtual Observatory - India.
     *
     * Use is subject to license terms
     */
@@ -15,7 +15,7 @@ namespace nom.tam.fits
     using System.Collections;
     using System.IO;
     using nom.tam.util;
-    	
+
 	/// <summary>This class describes methods to access and manipulate the header
 	/// for a FITS HDU. This class does not include code specific
 	/// to particular types of HDU.
@@ -38,7 +38,7 @@ namespace nom.tam.fits
             }
           }
         }
-    	
+
         /// <summary>Find the number of cards in the header</summary>
 		virtual public int NumberOfCards
 		{
@@ -116,7 +116,7 @@ namespace nom.tam.fits
 				return true;
 			}
 		}
-           
+
 	    /// <summary>
             /// Set the SIMPLE keyword to the given value.
 	    /// </summary>
@@ -135,7 +135,7 @@ namespace nom.tam.fits
 				if(FindCard("NAXIS") != null)
 				{
 					int nax = GetIntValue("NAXIS");
-					
+
 					cursor = GetCursor();
 
                     if(FindCard("NAXIS" + nax) != null)
@@ -153,7 +153,7 @@ namespace nom.tam.fits
 						}
 					}
 				}
-				
+
 				cursor = GetCursor();
                 cursor.MoveNext();
 				//try
@@ -176,13 +176,13 @@ namespace nom.tam.fits
 				DeleteKey("SIMPLE");
 				DeleteKey("XTENSION");
                 DeleteKey("EXTEND");
-               
+
 				cursor = GetCursor();
                 cursor.MoveNext();
 				//try
 				//{
 					cursor.Add("XTENSION", new HeaderCard("XTENSION", value, "C# FITS: " + DateTime.Now));
-           
+
                     //cursor.Insert("XTENSION", new HeaderCard("XTENSION", value, "C# FITS: " + DateTime.Now));
 				//}
 				//catch(HeaderCardException e)
@@ -250,16 +250,16 @@ namespace nom.tam.fits
     #region Instance Variables
 		/// <summary>The actual header data stored as a HashedList of HeaderCards.</summary>
 		private HashedList cards;
-		
+
 		/// <summary>This cursor allows one to run through the list.</summary>
 		private Cursor cursor;
-		
+
 		/// <summary>Offset of this Header in the FITS file</summary>
 		private long fileOffset = - 1;
-		
+
 		/// <summary>Number of cards in header last time it was read</summary>
 		private int oldSize;
-		
+
 		/// <summary>Input descriptor last time header was read</summary>
 		private ArrayDataIO input;
     #endregion
@@ -269,7 +269,7 @@ namespace nom.tam.fits
         {
           cards = new HashedList();
           cursor = cards.GetCursor();
-         
+
         }
 
         /// <summary>Create an empty header</summary>
@@ -277,7 +277,7 @@ namespace nom.tam.fits
 		{
 			InitBlock();
 		}
-		
+
 		/// <summary>Create a header and populate it from the input stream</summary>
 		/// <param name="is_Renamed"> The input stream where header information is expected.</param>
 		public Header(ArrayDataIO is_Renamed)
@@ -285,13 +285,13 @@ namespace nom.tam.fits
 			InitBlock();
 			Read(is_Renamed);
 		}
-		
+
 		/// <summary>Create a header and initialize it with a vector of strings.</summary>
 		/// <param name="newCards">Card images to be placed in the header.</param>
 		public Header(String[] newCards)
 		{
 			InitBlock();
-			
+
 			for(int i = 0; i < newCards.Length; i += 1)
 			{
 				HeaderCard card = new HeaderCard(newCards[i]);
@@ -305,7 +305,7 @@ namespace nom.tam.fits
 				}
 			}
 		}
-		
+
 		/// <summary>Create a header which points to the given data object.</summary>
 		/// <param name="o">The data object to be described.</param>
         /// <exception cref="FitsException"> FitsException if the data was not valid for this header.</exception>
@@ -339,7 +339,7 @@ namespace nom.tam.fits
 
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
-        /// and adds the new card to the end of the HeaderCard list 
+        /// and adds the new card to the end of the HeaderCard list
         /// </summary>
         /// <param name="key">The key of the new HeaderCard</param>
         /// <param name="val">The value of the new HeaderCard</param>
@@ -351,7 +351,7 @@ namespace nom.tam.fits
 
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
-        /// and adds the new card to the end of the HeaderCard list 
+        /// and adds the new card to the end of the HeaderCard list
         /// </summary>
         /// <param name="key">The key of the new HeaderCard</param>
         /// <param name="val">The value of the new HeaderCard</param>
@@ -363,7 +363,7 @@ namespace nom.tam.fits
 
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
-        /// and adds the new card to the end of the HeaderCard list 
+        /// and adds the new card to the end of the HeaderCard list
         /// </summary>
         /// <param name="key">The key of the new HeaderCard</param>
         /// <param name="val">The value of the new HeaderCard</param>
@@ -372,10 +372,10 @@ namespace nom.tam.fits
         {
           AddCard(new HeaderCard(key, val, comment));
         }
-            
+
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
-        /// and adds the new card to the end of the HeaderCard list 
+        /// and adds the new card to the end of the HeaderCard list
         /// </summary>
         /// <param name="key">The key of the new HeaderCard</param>
         /// <param name="val">The value of the new HeaderCard</param>
@@ -387,7 +387,7 @@ namespace nom.tam.fits
 
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
-        /// and adds the new card to the end of the HeaderCard list 
+        /// and adds the new card to the end of the HeaderCard list
         /// </summary>
         /// <param name="key">The key of the new HeaderCard</param>
         /// <param name="val">The value of the new HeaderCard</param>
@@ -396,10 +396,10 @@ namespace nom.tam.fits
         {
           AddCard(new HeaderCard(key, val, comment));
         }
-            
+
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
-        /// and adds the new card to the end of the HeaderCard list 
+        /// and adds the new card to the end of the HeaderCard list
         /// </summary>
         /// <param name="key">The key of the new HeaderCard</param>
         /// <param name="val">The value of the new HeaderCard</param>
@@ -442,7 +442,7 @@ namespace nom.tam.fits
       RemoveCard(key);
       cursor.Add(key, new HeaderCard(key, val, comment));
     }
-		
+
     /// <summary>Add or replace a key with the given double value and comment.
     /// Note that float values will be promoted to doubles.</summary>
     /// <param name="key">The header key.</param>
@@ -469,7 +469,7 @@ namespace nom.tam.fits
       RemoveCard(key);
       cursor.Add(key, new HeaderCard(key, val, comment));
     }
-		
+
     /// <summary>Add or replace a key with the given long value and comment.
     /// Note that int's will be promoted to long's.</summary>
     /// <param name="key">The header key.</param>
@@ -556,7 +556,7 @@ namespace nom.tam.fits
         {
           InsertCard(new HeaderCard(key, val, comment), pos);
         }
-            
+
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
         /// and inserts the new card in the pos'th position in the HeaderCard list.
@@ -586,7 +586,7 @@ namespace nom.tam.fits
         {
           InsertCard(new HeaderCard(key, val, comment), pos);
         }
-            
+
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
         /// and inserts the new card in the pos'th position in the HeaderCard list.
@@ -686,7 +686,7 @@ namespace nom.tam.fits
         {
           InsertCard(new HeaderCard(key, val, comment), posKey);
         }
-            
+
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
         /// and inserts the new card in front of the HeaderCard associated with key posKey.
@@ -716,7 +716,7 @@ namespace nom.tam.fits
         {
           InsertCard(new HeaderCard(key, val, comment), posKey);
         }
-            
+
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
         /// and inserts the new card in front of the HeaderCard associated with key posKey.
@@ -758,7 +758,7 @@ namespace nom.tam.fits
           InsertCard(new HeaderCard("HISTORY", null, history), posKey);
         }
     #endregion
-    
+
     #region Insert By HeaderCard
         /// <summary>
         /// Inserts card in front of posCard in the HeaderCard list.
@@ -834,7 +834,7 @@ namespace nom.tam.fits
         {
           InsertCard(new HeaderCard(key, val, comment), posCard);
         }
-            
+
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
         /// and inserts the new HeaderCard in front of posCard in the HeaderCard list.
@@ -862,7 +862,7 @@ namespace nom.tam.fits
         {
           InsertCard(new HeaderCard(key, val, comment), posCard);
         }
-            
+
         /// <summary>
         /// Creates a new HeaderCard to accommodate key, val, and comment,
         /// and inserts the new HeaderCard in front of posCard in the HeaderCard list.
@@ -946,7 +946,7 @@ namespace nom.tam.fits
           }
         }
     #endregion
-        
+
         /// <summary>
         ///Add a line to the header using the COMMENT style, i.e., no '='
         /// in column 9.
@@ -959,7 +959,7 @@ namespace nom.tam.fits
         {
           // Should just truncate strings, so we should never get
           // an exception...
-    			
+
           //try
           //{
           cursor.Add(new HeaderCard(header, null, value_Renamed));
@@ -969,7 +969,7 @@ namespace nom.tam.fits
           //Console.Error.WriteLine("Impossible Exception for comment style:" + header + ":" + value_Renamed);
           //}
         }
-    		
+
         /*
         /// <summary>Add a COMMENT line.</summary>
         /// <param name="value">The comment.</param>
@@ -978,7 +978,7 @@ namespace nom.tam.fits
         {
           InsertCommentStyle("COMMENT", value_Renamed);
         }
-    		
+
         /// <summary>Add a HISTORY line.</summary>
         /// <param name="value">The history record.</param>
         /// <exception cref="">HeaderCardException If the parameter is not a valid FITS comment.</exception>
@@ -994,16 +994,16 @@ namespace nom.tam.fits
         /// either kill this or RemoveCard
         public virtual void DeleteKey(String key)
         {
-          cards.Remove(key);			
+          cards.Remove(key);
         }
- 
+
         /// <summary>
         /// Tests if the specified keyword is present in this table.
         /// </summary>
         /// <param name="key">the keyword to be found.</param>
         /// <returns><CODE>true<CODE> if the specified keyword is present in this table
         ///  <CODE>false<CODE> otherwise.</returns>
-        
+
         public bool ContainsKey(String key)
         {
           return cards.ContainsKey(key);
@@ -1019,7 +1019,7 @@ namespace nom.tam.fits
           {
             if (fcard.KeyValuePair)
             {
-               
+
                 cursor.Add(fcard.Key, fcard);
             }
             else
@@ -1059,11 +1059,11 @@ namespace nom.tam.fits
         public void UpdateLines(Header newHdr)
         {
 	      Cursor j = newHdr.GetCursor();
-    	  
+
 	      while (j.MoveNext())
           {
 	        HeaderCard nextHCard = (HeaderCard)j.Current;
-            
+
 	        // updateLine() doesn't work with COMMENTs because
 	        // this would allow only one COMMENT in total in each header
 	        if( nextHCard.Key.StartsWith("COMMENT") )
@@ -1076,7 +1076,7 @@ namespace nom.tam.fits
 	        }
 	      }
         }
-        
+
         /// <summary>Get a cursor over the header cards</summary>
 	    /// KILL THIS METHOD
 	    public Cursor GetCursor()
@@ -1084,7 +1084,7 @@ namespace nom.tam.fits
 	    //return cards.GetCursor(0);
           return cards.GetCursor();
 	    }
-    		
+
         /// <summary>Find the card associated with a given key.
         /// If found this sets the mark to the card, otherwise it
         /// unsets the mark.</summary>
@@ -1101,7 +1101,7 @@ namespace nom.tam.fits
           }
           return card;
         }
-    		
+
         /*
         /// <summary>Find the card associated with a given key.</summary>
         /// <param name="key">The header key.</param>
@@ -1140,16 +1140,16 @@ namespace nom.tam.fits
           {
             throw new HeaderCardException("Duplicate key in replace");
           }
-    			
+
           oldCard.Key = newKey;
-    			
+
           return true;
         }
     	/// <summary>
     	/// Gets cursor
     	/// </summary>
     	/// <returns></returns>
-	
+
         public IEnumerator GetEnumerator()
         {
           return GetCursor();
@@ -1166,7 +1166,7 @@ namespace nom.tam.fits
           }
         }
 
-        		
+
         /* Deprecated methods ******/
 
         /// <summary>Get the n'th card image in the header</summary>
@@ -1194,15 +1194,15 @@ namespace nom.tam.fits
         internal virtual Cursor PositionAfterIndex(String prefix, int col)
         {
           String colnum = "" + col;
-    			
+
           cursor.Key = prefix + colnum;
-    			
+
           String key;
           do
           {
             //key = cursor.Current.Key.Trim();
             key = ((String)cursor.Key).Trim();
-            
+
             // if(key == null || key.Length <= colnum.Length || !key.Substring(key.Length - colnum.Length).Equals(colnum))
             if ( key == null || ( key.Length <= (prefix+colnum).Length && key.Equals(prefix+colnum)) )
             {
@@ -1244,42 +1244,42 @@ namespace nom.tam.fits
 			{
 				return 0;
 			}
-			
+
 			int naxis = GetIntValue("NAXIS", 0);
 			int bitpix = GetIntValue("BITPIX");
-			
+
 			int[] axes = new int[naxis];
-			
+
 			for (int axis = 1; axis <= naxis; axis += 1)
 			{
 				axes[axis - 1] = GetIntValue("NAXIS" + axis, 0);
 			}
-			
+
 			bool isGroup = GetBooleanValue("GROUPS", false);
-			
+
 			int pcount = GetIntValue("PCOUNT", 0);
 			int gcount = GetIntValue("GCOUNT", 1);
-			
+
 			int startAxis = 0;
-			
+
 			if (isGroup && naxis > 1 && axes[0] == 0)
 			{
 				startAxis = 1;
 			}
-			
+
 			int size = 1;
 			for (int i = startAxis; i < naxis; i += 1)
 			{
 				size *= axes[i];
 			}
-			
+
 			size += pcount;
 			size *= gcount;
-			
+
 			// Now multiply by the number of bits per pixel and
 			// convert to bytes.
 			size *= Math.Abs(GetIntValue("BITPIX", 0)) / 8;
-			
+
 			return size;
 		}
 
@@ -1291,7 +1291,7 @@ namespace nom.tam.fits
 			{
 				return 0;
 			}
-			
+
 			return FitsUtil.AddPadding(cards.Count * 80);
 		}
 
@@ -1304,7 +1304,7 @@ namespace nom.tam.fits
 		{
 			return (int) GetLongValue(key, (long) dft);
 		}
-		
+
 		/// <summary>Get the <CODE>int</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <returns> The associated value or 0 if not found.</returns>
@@ -1312,7 +1312,7 @@ namespace nom.tam.fits
 		{
 			return (int) GetLongValue(key);
 		}
-		
+
 		/// <summary>Get the <CODE>long</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <returns> The associated value or 0 if not found.</returns>
@@ -1320,7 +1320,7 @@ namespace nom.tam.fits
 		{
 			return GetLongValue(key, 0L);
 		}
-		
+
 		/// <summary>Get the <CODE>long</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <param name="dft">The default value to be returned if the key cannot be found.</param>
@@ -1332,7 +1332,7 @@ namespace nom.tam.fits
 			{
 				return dft;
 			}
-			
+
 			try
 			{
 				String v = fcard.Value;
@@ -1344,10 +1344,10 @@ namespace nom.tam.fits
 			catch(FormatException)
 			{
 			}
-			
+
 			return dft;
 		}
-		
+
 		/// <summary>Get the <CODE>float</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <param name="dft">The value to be returned if the key is not found.</param>
@@ -1355,7 +1355,7 @@ namespace nom.tam.fits
 		{
 			return (float)GetDoubleValue(key, dft);
 		}
-		
+
 		/// <summary>Get the <CODE>float</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <returns> The associated value or 0.0 if not found.</returns>
@@ -1363,7 +1363,7 @@ namespace nom.tam.fits
 		{
 			return (float)GetDoubleValue(key);
 		}
-		
+
 		/// <summary>Get the <CODE>double</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <returns>The associated value or 0.0 if not found.</returns>
@@ -1371,7 +1371,7 @@ namespace nom.tam.fits
 		{
 			return GetDoubleValue(key, 0.0);
 		}
-		
+
 		/// <summary>Get the <CODE>double</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <param name="dft">The default value to return if the key cannot be found.</param>
@@ -1383,7 +1383,7 @@ namespace nom.tam.fits
 			{
 				return dft;
 			}
-			
+
 			try
 			{
 				String v = fcard.Value;
@@ -1406,7 +1406,7 @@ namespace nom.tam.fits
 		{
 			return GetBooleanValue(key, false);
 		}
-		
+
 		/// <summary>Get the <CODE>boolean</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <param name="dft">The value to be returned if the key cannot be found
@@ -1419,13 +1419,13 @@ namespace nom.tam.fits
 			{
 				return dft;
 			}
-			
+
 			String val = fcard.Value;
 			if (val == null)
 			{
 				return dft;
 			}
-			
+
 			if (val.Equals("T"))
 			{
 				return true;
@@ -1439,7 +1439,7 @@ namespace nom.tam.fits
 				return dft;
 			}
 		}
-		
+
 		/// <summary>Get the <CODE>String</CODE> value associated with the given key.</summary>
 		/// <param name="key">The header key.</param>
 		/// <returns> The associated value or null if not found or if the value is not a string.</returns>
@@ -1450,7 +1450,7 @@ namespace nom.tam.fits
 			{
 				return null;
 			}
-			
+
 			return fcard.Value;
 		}
     #endregion
@@ -1502,7 +1502,7 @@ namespace nom.tam.fits
       while(notEnd)
       {
         int need = 80;
-				
+
         //				try
         //				{
         for(int len = 1; need > 0 && len > 0;)
@@ -1526,7 +1526,7 @@ namespace nom.tam.fits
         //					}
         //					throw new TruncatedFileException(e.Message);
         //				}
-				
+
         String cbuf = new String(SupportClass.ToCharArray(buffer));
         HeaderCard fcard = new HeaderCard(cbuf);
 
@@ -1541,12 +1541,14 @@ namespace nom.tam.fits
 
           firstCard = false;
         }
-				
+
+#if DEBUG
         String key2 = fcard.Key;
         if(key2 != null && cards.ContainsKey(key2))
         {
           Console.Error.WriteLine("Warning: multiple occurrences of key:" + key2);
         }
+#endif
         // save card
         AddLine(fcard);
         if (cbuf.Substring(0, (8) - (0)).Equals("END     "))
@@ -1554,13 +1556,13 @@ namespace nom.tam.fits
           notEnd = false;
         }
       }
-			
+
       if (fileOffset >= 0)
       {
         oldSize = cards.Count;
         input = dis;
       }
-			
+
       // Read to the end of the current FITS block.
       try
       {
@@ -1584,7 +1586,7 @@ namespace nom.tam.fits
         throw new TruncatedFileException(e.Message);
       }
     }
-		
+
     /// <summary>Write the current header (including any needed padding) to the
 		/// output stream.</summary>
 		/// <param name="dos">The output stream to which the data is to be written.</param>
@@ -1604,7 +1606,7 @@ namespace nom.tam.fits
 			{
 				return ;
 			}
-			
+
 			//Cursor cursor = cards.GetCursor(0);
             Cursor cursor = cards.GetCursor();
 
@@ -1616,7 +1618,7 @@ namespace nom.tam.fits
 					byte[] b = SupportClass.ToByteArray(card.ToString());
 					dos.Write(b);
 				}
-				
+
 				byte[] padding = new byte[FitsUtil.Padding(NumberOfCards * 80)];
 				for (int i = 0; i < padding.Length; i += 1)
 				{
@@ -1636,12 +1638,12 @@ namespace nom.tam.fits
 			{
 			}
 		}
-		
+
 		/// <summary>Rewrite the header.</summary>
 		public virtual void Rewrite()
 		{
 			ArrayDataIO dos = (ArrayDataIO)input;
-			
+
 			if(this.Rewriteable)
 			{
 				//FitsUtil.Reposition(dos, fileOffset);
@@ -1671,7 +1673,7 @@ namespace nom.tam.fits
 			{
 			}
 		}
-		
+
 		/// <summary>Set the dimension for a given axis.</summary>
 		/// <param name="axis">The axis being set.</param>
 		/// <param name="dim"> The dimension</param>
@@ -1734,15 +1736,15 @@ namespace nom.tam.fits
 				{
 					throw new FitsException("Empty XTENSION keyword");
 				}
-				
+
 				isExtension = true;
-				
+
 				if(value_Renamed.Equals("BINTABLE") || value_Renamed.Equals("A3DTABLE") || value_Renamed.Equals("TABLE"))
 				{
 					isTable = true;
 				}
 			}
-            
+
 			CardCheck("BITPIX");
 			CardCheck("NAXIS");
 
@@ -1768,18 +1770,18 @@ namespace nom.tam.fits
         /// <summary>Check if the given key is the next one available in the header.</summary>
 		private void CardCheck(String key)
 		{
-            
+
 			if(!cursor.MoveNext())
 			{
 				throw new FitsException("Header terminates before " + key);
 			}
-            
+
 			HeaderCard card = (HeaderCard)((DictionaryEntry)cursor.Current).Value;
 			if(!card.Key.Equals(key))
 			{
 				throw new FitsException("Key " + key + " not found where expected." + "Found " + card.Key);
 			}
-           
+
 		}
 
         /// <summary>Ensure that the header has exactly one END keyword in
@@ -1789,7 +1791,7 @@ namespace nom.tam.fits
 			// Ensure we have an END card only at the end of the header.
 			cursor = GetCursor();
 			HeaderCard card;
-			
+
 			while(cursor.MoveNext())
 			{
 				card = (HeaderCard)((DictionaryEntry)cursor.Current).Value;

@@ -8,11 +8,11 @@ namespace nom.tam.fits
 {
     /*
    * Copyright: Thomas McGlynn 1997-2007.
-   * 
+   *
    * The CSharpFITS package is a C# port of Tom McGlynn's
    * nom.tam.fits Java package, initially ported by  Samuel Carliles
    *
-   * Copyright: 2007 Virtual Observatory - India.    
+   * Copyright: 2007 Virtual Observatory - India.
    *
    * Use is subject to license terms
    */
@@ -79,7 +79,7 @@ namespace nom.tam.fits
     /// *
     /// </summary>
     /// <version>  0.99.4  March 2, 2007
-    /// 
+    ///
     /// </version>
     public class Fits
     {
@@ -177,16 +177,16 @@ namespace nom.tam.fits
         }
 
         // change suggested in .99.4 version: Added bool compressed field.
-        /// <summary>Associate the FITS object with a file or URL. 
-        /// 
+        /// <summary>Associate the FITS object with a file or URL.
+        ///
         /// The string is assumed to be a URL if it begins one of the
         /// protocol strings.
         /// If the string ends in .gz it is assumed that
         /// the data is in a compressed format.
         /// All string comparisons are case insensitive.
-        /// 
+        ///
         /// <param name="filename"> The name of the file or URL to be processed.</summary>
-        /// <exception cref="FitsException"> Thrown if unable to find or open 
+        /// <exception cref="FitsException"> Thrown if unable to find or open
         /// a file or URL from the string given.
         public Fits(String filename, bool compressed, FileAccess access)
         {
@@ -202,7 +202,7 @@ namespace nom.tam.fits
             int len = filename.Length;
             String lc = filename.ToLower();
 
-            // for (String protocol: urlProtocols) 
+            // for (String protocol: urlProtocols)
             for (int i = 0; i < UrlProtocols.Length; i++)
             {
                 if (lc.StartsWith(UrlProtocols[i]))
@@ -394,7 +394,7 @@ namespace nom.tam.fits
             //               Made addLine methods in Header public.
             //               Changed ArrayFuncs.newInstance to handle inputs with dimensionality of 0.
             // Version 0.99.1:
-            //               Added deleteRows and deleteColumns functionality to all tables.  
+            //               Added deleteRows and deleteColumns functionality to all tables.
             //               This includes changes
             //               to TableData, TableHDU, AsciiTable, BinaryTable and util/ColumnTable.
             //               Row deletions were suggested by code of R. Mathar but this works
@@ -814,15 +814,17 @@ namespace nom.tam.fits
             // change suggested in .99 version
             try
             {
-                if (obs is BufferedFile)
+                if (obs is BufferedFile file)
                 {
-                    ((BufferedFile) obs).SetLength(((BufferedFile) obs).FilePointer);
+                    file.SetLength(file.FilePointer);
                 }
             }
             catch (IOException e)
             {
+#if DEBUG
                 System.Console.Out.WriteLine("Exception occured while Writing BufferedFile: \n\t" + e.Message);
-                // Ignore problems...  
+#endif
+                // Ignore problems...
             }
         }
 
@@ -851,7 +853,7 @@ namespace nom.tam.fits
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public virtual void Close()
         {
@@ -978,7 +980,7 @@ namespace nom.tam.fits
                 lo += (data[2 * i + 2] << 8) & 0xff00L | data[2 * i + 3] & 0xffL;
             }
 
-            /* The following three cases actually cannot happen 
+            /* The following three cases actually cannot happen
              * since FITS records are multiples of 2880 bytes.
 	         */
             if (remain >= 1)

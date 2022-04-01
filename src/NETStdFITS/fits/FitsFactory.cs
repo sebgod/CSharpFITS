@@ -2,11 +2,11 @@ namespace nom.tam.fits
 {
     /*
   * Copyright: Thomas McGlynn 1997-2007.
-  * 
+  *
   * The CSharpFITS package is a C# port of Tom McGlynn's
   * nom.tam.fits Java package, initially ported by  Samuel Carliles
   *
-  * Copyright: 2007 Virtual Observatory - India.   
+  * Copyright: 2007 Virtual Observatory - India.
   *
   * Use is subject to license terms
   */
@@ -22,7 +22,7 @@ namespace nom.tam.fits
 	/// need to be added and this file modified but
 	/// no other changes should be needed in the FITS libraries.
 	/// </summary>
-	
+
 	public class FitsFactory
 	{
 		/// <summary>Indicate whether ASCII tables should be used where feasible.</summary>
@@ -37,9 +37,9 @@ namespace nom.tam.fits
 			set
 			{
 				useAsciiTables = value;
-			}			
+			}
 		}
-	
+
 		/// <summary>Are we processing HIERARCH style keywords</summary>
 		/// <summary>Enable/Disable hierarchical keyword processing.</summary>
 		public static bool UseHierarch
@@ -48,14 +48,14 @@ namespace nom.tam.fits
 			{
 				return useHierarch;
 			}
-			
+
 			set
 			{
 				useHierarch = value;
 			}
-			
+
 		}
-		
+
 		private static bool useAsciiTables = true;
 		private static bool useHierarch = false;
 
@@ -124,10 +124,9 @@ namespace nom.tam.fits
 			}
 			else
 			{
-                Console.WriteLine();
-				throw new FitsException("Invalid data presented to HDUFactory");
+                throw new FitsException("Invalid data presented to HDUFactory");
 			}
-			
+
 			return HDUFactory(h, d);
 		}
 
@@ -155,7 +154,7 @@ namespace nom.tam.fits
 			{
 				return new UndefinedHDU(hdr, d);
 			}
-			
+
 			return null;
 		}
 	}

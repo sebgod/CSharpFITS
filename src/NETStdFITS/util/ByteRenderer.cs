@@ -2,11 +2,11 @@ namespace nom.tam.util
 {
     /*
      * Copyright: Thomas McGlynn 1997-2007.
-     * 
+     *
      * The CSharpFITS package is a C# port of Tom McGlynn's
      * nom.tam.fits Java package, initially ported by  Samuel Carliles
      *
-     * Copyright: 2007 Virtual Observatory - India. 
+     * Copyright: 2007 Virtual Observatory - India.
      *
      * Use is subject to license terms
      */
@@ -224,7 +224,7 @@ namespace nom.tam.util
           //bytes = BitConverter.GetBytes(s.Length > 0 ? heapPos : 0);
           Array.Reverse(bytes);
           s.Write(bytes, 0, bytes.Length);
-        }        
+        }
       }
 
       protected byte[] _buf;
@@ -283,7 +283,9 @@ namespace nom.tam.util
         }
         else if(s.Length > _arrayLength)
         {
+#if DEBUG
           Console.Error.WriteLine("Warning: String value too wide for column; truncating.");
+#endif
           if(_trimLeft)
           {
             s = s.Substring(s.Length - _arrayLength, _arrayLength);

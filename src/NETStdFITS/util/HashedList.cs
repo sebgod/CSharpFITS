@@ -2,20 +2,20 @@ namespace nom.tam.util
 {
   /*
   * Copyright: Thomas McGlynn 1997-2007.
-  * 
+  *
   * The CSharpFITS package is a C# port of Tom McGlynn's
   * nom.tam.fits Java package, initially ported by  Samuel Carliles
   *
-  * Copyright: 2007 Virtual Observatory - India. 
+  * Copyright: 2007 Virtual Observatory - India.
   *
   * Use is subject to license terms
   */
     using System;
     using System.Collections;
     using nom.tam.fits;
-    // suggested in .99.1 version: 
+    // suggested in .99.1 version:
     // Changes made as the data structure storing keys in ArrayList and values in Hashtable.
-      
+
     /// <summary>
     /// This class implements a structure which can
     ///   be accessed either through a hash or
@@ -93,7 +93,7 @@ namespace nom.tam.util
             }
         }
 
-        // suggested in .99.1 version: 
+        // suggested in .99.1 version:
         //  Added to retrieve key value, needed as the internal data structure changes to ArrayList.
         /// <summary>Key at specified \"index\".</summary>
         /// <param name="index">Index of Key</param>
@@ -295,7 +295,7 @@ namespace nom.tam.util
 
             /// <summary>Add an entry at the current location. The new entry goes before
             /// the entry that would be returned in the next 'next' call, and
-            /// that call will not be affected by the insertion. 
+            /// that call will not be affected by the insertion.
             /// Note: this method is not in the IEnumerator interface.</summary>
             public void Add(System.Object val)
             {
@@ -341,8 +341,10 @@ namespace nom.tam.util
             {
                 this.enclosingInstance = enclosingInstance;
                 current = start;
+#if DEBUG
                 System.Console.Out.WriteLine("------------------------------------------");
                 System.Console.Out.WriteLine("Cursor Started from position: #" + current);
+#endif
             }
 
             protected HashedList Enclosing_Instance
@@ -373,7 +375,7 @@ namespace nom.tam.util
         }
 
         /// <summary>Add an element to the list.</summary>
-        /// <param name="pos">The element after which the current element 
+        /// <param name="pos">The element after which the current element
         /// be placed.  If pos is null put the element at the end of the list.</param>
         /// <param name="key">The hash key for the new object.  This may be null
         /// for an unkeyed entry.</param>
@@ -522,7 +524,7 @@ namespace nom.tam.util
             return keyed.ContainsKey(key);
         }
 
-        /// <summary>Clear the collection 
+        /// <summary>Clear the collection
         /// </summary>
         public void Clear()
         {
@@ -674,7 +676,9 @@ namespace nom.tam.util
         /// </summary>
         public bool RemoveUnkeyedObject(Object val)
         {
+#if DEBUG
             System.Console.Out.WriteLine("In RemoveUnkeyedObject method.");
+#endif
             if (keyed.ContainsValue(val))
             {
                 for (int i = 0; i < ordered.Count; i += 1)
@@ -774,7 +778,7 @@ namespace nom.tam.util
                 return keyed.Keys;
             }
         }
-        
+
         public bool IsFixedSize
         {
             get

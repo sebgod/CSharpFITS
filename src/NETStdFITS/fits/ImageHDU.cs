@@ -7,7 +7,7 @@ namespace nom.tam.fits
      * The CSharpFITS package is a C# port of Tom McGlynn's
      * nom.tam.fits Java package, initially ported by  Samuel Carliles
      *
-     * Copyright: 2007 Virtual Observatory - India.      
+     * Copyright: 2007 Virtual Observatory - India.
      *
      * Use is subject to license terms
      */
@@ -26,7 +26,7 @@ namespace nom.tam.fits
             return true;
           }
         }
-    		
+
         /// <summary>Change the Image from/to primary</summary>
 		override internal bool PrimaryHDU
 		{
@@ -38,9 +38,11 @@ namespace nom.tam.fits
 				}
 				catch(FitsException)
 				{
+#if DEBUG
 					Console.Error.WriteLine("Impossible exception in ImageData");
+#endif
 				}
-				
+
 				if (value)
 				{
 					myHeader.Simple = true;
@@ -61,7 +63,7 @@ namespace nom.tam.fits
 				return ((ImageData) myData).Tiler;
 			}
 		}
-		
+
 		/// <summary>Build an image HDU using the supplied data.</summary>
 		/// <param name="obj">the data used to build the image.</param>
         /// <exception cref="FitsException">If there was a problem with the data.</exception>
@@ -70,7 +72,7 @@ namespace nom.tam.fits
 			myData = d;
 			myHeader = h;
 		}
-		
+
 		/// <summary>Check that this HDU has a valid header for this type.</summary>
 		/// <returns> <CODE>true</CODE> if this HDU has a valid header.</returns>
 		public static new bool IsHeader(Header hdr)
@@ -94,7 +96,7 @@ namespace nom.tam.fits
 			}
 			return !hdr.GetBooleanValue("GROUPS");
 		}
-		
+
 		/// <summary>Check if this object can be described as a FITS image.</summary>
 		/// <param name="o">The Object being tested.</param>
 		public static bool IsData(Object o)
@@ -113,12 +115,12 @@ namespace nom.tam.fits
 		{
 			return ManufactureData(myHeader);
 		}
-		
+
 		public static Data ManufactureData(Header hdr)
 		{
 			return new ImageData(hdr);
 		}
-		
+
 		/// <summary>Create a  header that describes the given image data.</summary>
 		/// <param name="o">The image to be described.</param>
 		/// <exception cref=""> FitsException if the object does not contain valid image data.</exception>
@@ -128,13 +130,13 @@ namespace nom.tam.fits
 			{
 				return null;
 			}
-			
+
 			Header h = new Header();
 			d.FillHeader(h);
-			
+
 			return h;
 		}
-		
+
 		/// <summary>Encapsulate an object as an ImageHDU.</summary>
 		public static Data Encapsulate(Object o)
 		{
@@ -152,7 +154,7 @@ namespace nom.tam.fits
 			{
 				Console.Out.WriteLine("  Image (bad header)");
 			}
-			
+
 			Console.Out.WriteLine("      Header Information:");
 			Console.Out.WriteLine("         BITPIX=" + myHeader.GetIntValue("BITPIX", - 1));
 			int naxis = myHeader.GetIntValue("NAXIS", - 1);
@@ -161,7 +163,7 @@ namespace nom.tam.fits
 			{
 				Console.Out.WriteLine("         NAXIS" + i + "=" + myHeader.GetIntValue("NAXIS" + i, - 1));
 			}
-			
+
 			Console.Out.WriteLine("      Data information:");
 			try
 			{

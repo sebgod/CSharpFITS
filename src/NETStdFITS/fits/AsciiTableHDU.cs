@@ -8,13 +8,13 @@ namespace nom.tam.fits
     * The CSharpFITS package is a C# port of Tom McGlynn's
     * nom.tam.fits Java package, initially ported by  Samuel Carliles
     *
-    * Copyright: 2007 Virtual Observatory - India. 
-    * 
+    * Copyright: 2007 Virtual Observatory - India.
+    *
     * Use is subject to license terms
     */
     using System;
 	using nom.tam.util;
-	
+
 	/// <summary> FITS ASCII table header/data unit
 	/// </summary>
 	public class AsciiTableHDU:TableHDU
@@ -27,7 +27,7 @@ namespace nom.tam.fits
 			{
 				return IsHeader(myHeader);
 			}
-			
+
 		}
         /// <summary>
         /// Returns data object of the AsciiTableHDU
@@ -39,18 +39,18 @@ namespace nom.tam.fits
 				return data;
 			}
 		}
-		
+
 		/// <summary>Just a copy of myData with the correct type</summary>
 		internal AsciiTable data;
 
         /// Suggested in .97 version
         /// <summary>
         /// The standard column stems for an ASCII table.
-        /// Note that TBCOL is not included here -- it needs to 
+        /// Note that TBCOL is not included here -- it needs to
         /// be handled specially since it does not simply shift.
         /// </summary>
         private String[] keyStems = { "TFORM", "TZERO", "TNULL", "TTYPE", "TUNIT" };
-        
+
 		/// <summary>
         /// Create an ascii table header/data unit
 		/// </summary>
@@ -63,8 +63,8 @@ namespace nom.tam.fits
 			data = (AsciiTable) d;
 			myData = d;
 		}
-		
-		
+
+
 		/// <summary> Check that this is a valid ascii table header.</summary>
 		/// <param name="header">to validate.</param>
 		/// <returns> <CODE>true</CODE> if this is an ascii table header.</returns>
@@ -84,7 +84,7 @@ namespace nom.tam.fits
         /*  Type t = ArrayFuncs.GetBaseClass(o);
                 return t != null && (t.Equals(typeof(String)) || t.Equals(typeof(int)) || t.Equals(typeof(long)) ||
             t.Equals(typeof(float)) || t.Equals(typeof(double)));
-        */  
+        */
             if(o is Object[])
 			{
 				System.Object[] oo = (System.Object[]) o;
@@ -102,9 +102,9 @@ namespace nom.tam.fits
 			{
 				return false;
 			}
-      
+
 		}
-		
+
 		/// <summary> Create a Data object to correspond to the header description.</summary>
 		/// <returns> An unfilled Data object which can be used to read in the data for this HDU.</returns>
         /// <exception cref="FitsException"> FitsException if the Data object could not be created from this HDU's Header</exception>
@@ -118,7 +118,7 @@ namespace nom.tam.fits
 		{
 			return ManufactureData(myHeader);
 		}
-		
+
 		/// <summary>Create a header to match the input data.</summary>
         public static Header ManufactureHeader(Data d)
 		{
@@ -127,9 +127,9 @@ namespace nom.tam.fits
 			Cursor c = hdr.GetCursor();
 			return hdr;
 		}
-		
+
         /// <summary>
-        /// Create a ASCII table data structure from 
+        /// Create a ASCII table data structure from
         /// an array of objects representing the columns.
         /// </summary>
 		public static Data Encapsulate(Object o)
@@ -154,7 +154,7 @@ namespace nom.tam.fits
 
           return null;
 		}
-		
+
 		/// <summary> Skip the ASCII table and throw an exception.</summary>
 		/// <param name="stream">the stream from which the data is read.</param>
 		public override void ReadData(ArrayDataIO stream)
@@ -175,13 +175,13 @@ namespace nom.tam.fits
 			}
 			data.SetNull(row, col, flag);
 		}
-		
+
 		/// <summary>See if an element is null</summary>
 		public virtual bool IsNull(int row, int col)
 		{
 			return data.IsNull(row, col);
 		}
-		
+
 		/// <summary>Set the null string for a column</summary>
 		public virtual void SetNullString(int col, String newNull)
 		{
@@ -192,26 +192,28 @@ namespace nom.tam.fits
 			}
 			catch(HeaderCardException e)
 			{
+#if DEBUG
 				Console.Error.WriteLine("Impossible exception in setNullString" + e);
+#endif
 			}
 
             data.SetNullString(col, newNull);
 		}
-		
+
 		/// <summary>Add a column</summary>
 		public override int AddColumn(Object newCol)
 		{
 			data.AddColumn(newCol);
-			
+
 			// Move the cursor to point after all the data describing
 			// the previous column.
-			
+
 			Cursor c = myHeader.PositionAfterIndex("TBCOL", data.NCols);
-			
+
 			int rowlen = data.AddColInfo(NCols, c);
 			int oldRowlen = myHeader.GetIntValue("NAXIS1");
 			myHeader.SetNaxis(1, rowlen + oldRowlen);
-			
+
 			int oldTfields = myHeader.GetIntValue("TFIELDS");
 			try
 			{
@@ -219,11 +221,13 @@ namespace nom.tam.fits
 			}
 			catch(Exception e)
 			{
+#if DEBUG
 				Console.Error.WriteLine("Impossible exception at addColumn:" + e);
+#endif
 			}
 			return NCols;
 		}
-		
+
 		/// <summary> Print a little information about the data set.</summary>
 		public override void Info()
 		{

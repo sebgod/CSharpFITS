@@ -7,7 +7,7 @@ namespace nom.tam.fits
   * The CSharpFITS package is a C# port of Tom McGlynn's
   * nom.tam.fits Java package, initially ported by  Samuel Carliles
   *
-  * Copyright: 2007 Virtual Observatory - India. 
+  * Copyright: 2007 Virtual Observatory - India.
   *
   * Use is subject to license terms
   */
@@ -19,7 +19,7 @@ namespace nom.tam.fits
 	/// </summary>
 	public abstract class BasicHDU : FitsElement
 	{
-    
+
     #region Properties
         /// <summary>Indicate whether HDU can be primary HDU.
         /// This method must be overriden in HDU types which can
@@ -80,7 +80,7 @@ namespace nom.tam.fits
 			get
 			{
 				int size = 0;
-				
+
 				if (myHeader != null)
 				{
 					size = (int) (size + myHeader.Size);
@@ -103,16 +103,16 @@ namespace nom.tam.fits
 				int bitpix = myHeader.GetIntValue("BITPIX", - 1);
 				switch (bitpix)
 				{
-					case BITPIX_BYTE: 
-					case BITPIX_SHORT: 
-					case BITPIX_INT: 
-					case BITPIX_FLOAT: 
-					case BITPIX_DOUBLE: 
+					case BITPIX_BYTE:
+					case BITPIX_SHORT:
+					case BITPIX_INT:
+					case BITPIX_FLOAT:
+					case BITPIX_DOUBLE:
 						break;
-					default: 
+					default:
 						throw new FitsException("Unknown BITPIX type " + bitpix);
 				}
-				
+
 				return bitpix;
 			}
 		}
@@ -133,18 +133,18 @@ namespace nom.tam.fits
 				{
 					throw new FitsException("NAXIS value " + nAxis + " too large");
 				}
-				
+
 				if (nAxis == 0)
 				{
 					return null;
 				}
-				
+
 				int[] axes = new int[nAxis];
 				for (int i = 1; i <= nAxis; i++)
 				{
 					axes[nAxis - i] = myHeader.GetIntValue("NAXIS" + i, 0);
 				}
-				
+
 				return axes;
 			}
 		}
@@ -238,7 +238,7 @@ namespace nom.tam.fits
                 return (DateTime)result;
 			}
 		}
-		
+
         /// <summary> Get the FITS file observation date as a <CODE>Date</CODE> object.</summary>
 		/// <returns>	either <CODE>null</CODE> or a Date object</returns>
 		virtual public DateTime ObservationDate
@@ -389,16 +389,16 @@ namespace nom.tam.fits
 				{
 					this.isPrimary = value;
 				}
-				
+
 				// Some FITS readers don't like the PCOUNT and GCOUNT keywords
 				// in a primary array or they EXTEND keyword in extensions.
-				
+
 				if(isPrimary && !myHeader.GetBooleanValue("GROUPS", false))
 				{
 					myHeader.DeleteKey("PCOUNT");
 					myHeader.DeleteKey("GCOUNT");
 				}
-				
+
 				if(isPrimary)
 				{
 					HeaderCard card = myHeader.FindCard("EXTEND");
@@ -411,11 +411,11 @@ namespace nom.tam.fits
 						myHeader.AddValue("EXTEND", true, "Allow extensions");
 					}
 				}
-				
+
 				if(!isPrimary)
 				{
 					Cursor c = myHeader.GetCursor();
-					
+
 					int pcount = myHeader.GetIntValue("PCOUNT", 0);
 					int gcount = myHeader.GetIntValue("GCOUNT", 1);
 					int naxis = myHeader.GetIntValue("NAXIS", 0);
@@ -423,7 +423,7 @@ namespace nom.tam.fits
 					//HeaderCard card;
 					HeaderCard pcard = myHeader.FindCard("PCOUNT");
 					HeaderCard gcard = myHeader.FindCard("GCOUNT");
-					
+
 					myHeader.GetCard(2 + naxis);
 					if (pcard == null)
 					{
@@ -444,13 +444,15 @@ namespace nom.tam.fits
 		{
 			get
 			{
-				try
-				{
+                try
+                {
 					return FitsFactory.HDUFactory(new int[0]);
 				}
-				catch(FitsException fe)
-				{
+				catch (FitsException)
+                {
+#if DEBUG
 					Console.Error.WriteLine("Impossible exception in GetDummyHDU");
+#endif
 					return null;
 				}
 			}
@@ -496,10 +498,10 @@ namespace nom.tam.fits
     #region Instance Variables
         /// <summary>The associated header.</summary>
 		protected internal Header myHeader = null;
-		
+
 		/// <summary>The associated data unit.</summary>
 		protected internal Data myData = null;
-		
+
 		/// <summary>Is this the first HDU in a FITS file?</summary>
 		protected internal bool isPrimary = false;
     #endregion
@@ -509,7 +511,7 @@ namespace nom.tam.fits
         /// <exception cref="FitsException"> FitsException if the Data object could not be created
 		/// from this HDU's Header</exception>
 		internal abstract Data ManufactureData();
-		
+
 		/// <summary>Skip the Data object immediately after the given Header object on
 		/// the given stream object.</summary>
 		/// <param name="stream">the stream which contains the data.</param>
@@ -524,7 +526,7 @@ namespace nom.tam.fits
 			temp_Int64 = stream.Seek((int)hdr.DataSize) - temp_Int64; //temp_BinaryReader.BaseStream.Seek((int) hdr.DataSize, System.IO.SeekOrigin.Current) - temp_Int64;
 			int generatedAux = (int)temp_Int64;
 		}
-		
+
 		/// <summary>Skip the Data object for this HDU.</summary>
 		/// <param name="stream">the stream which contains the data.</param>
         /// <exception cref="IOException"> IOException if the Data object could not be skipped.</exception>
@@ -532,7 +534,7 @@ namespace nom.tam.fits
 		{
 			SkipData(stream, myHeader);
 		}
-		
+
 		/// <summary>Read in the Data object for this HDU.</summary>
 		/// <param name="stream">the stream from which the data is read.</param>
         /// <exception cref="FitsException"> FitsException if the Data object could not be created from this HDU's Header</exception>
@@ -557,7 +559,7 @@ namespace nom.tam.fits
 					}
 				}
 			}
-			
+
 			myData.Read(stream);
 		}
 
@@ -568,10 +570,10 @@ namespace nom.tam.fits
 		{
 			return false;
 		}
-		
+
 		/// <summary>Print out some information about this HDU.</summary>
 		public abstract void Info();
-		
+
 		/// <summary>Check if a field is present and if so print it out.</summary>
 		/// <param name="name">The header keyword.</param>
 		/// <returns>Was it found in the header?</returns>
@@ -582,10 +584,10 @@ namespace nom.tam.fits
 			{
 				return false;
 			}
-			
+
 			return true;
 		}
-		
+
         /// <summary>Read out the HDU from the data stream.  This
 		/// will overwrite any existing header and data components.
         /// </summary>
@@ -595,7 +597,7 @@ namespace nom.tam.fits
 			myData = myHeader.MakeData();
 			myData.Read(stream);
 		}
-		
+
         /// <summary>Write out the HDU.</summary>
 		public virtual void Write(ArrayDataIO stream)
 		{
@@ -616,7 +618,7 @@ namespace nom.tam.fits
 				throw new FitsException("Error flushing at end of HDU: " + e.Message);
 			}
 		}
-		
+
 		/// <summary>Rewrite the HDU.</summary>
 		public virtual void Rewrite()
 		{
@@ -630,7 +632,7 @@ namespace nom.tam.fits
 				throw new FitsException("Invalid attempt to rewrite HDU");
 			}
 		}
-       
+
       /// <summary>
      /// Get the String value associated with <CODE>keyword</CODE>
       /// </summary>
