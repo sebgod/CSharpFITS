@@ -7,7 +7,7 @@ on:
     branches: [ master ]
     
 env:
-  PKG_VERSION: 2.${{ github.run_number }}.${{ github.run_attempt }}
+  PKG_VERSION: 2.20.${{ github.run_number }}${{ github.run_attempt }}
 
 jobs:
   build:
