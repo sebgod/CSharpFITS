@@ -7,7 +7,9 @@ on:
     branches: [ master ]
     
 env:
-  PKG_VERSION: 2.20.${{ github.run_number }}${{ github.run_attempt }}
+  VERSION_PREFIX: 3.0.${{ github.run_number }}
+  VERSION_REV: ${{ github.run_attempt }}
+  VERSION_SUFFIX: +${{ github.sha }}
   BUILD_CONF: Release
 
 jobs:
@@ -25,7 +27,7 @@ jobs:
       run: dotnet restore
       working-directory: src
     - name: Build
-      run: dotnet build -c $BUILD_CONF --no-restore --version-suffix +${{ github.sha }} -p:VersionPrefix=$PKG_VERSION -p:FileVersion=${PKG_VERSION}.0
+      run: dotnet build -c $BUILD_CONF --no-restore --version-suffix $VERSION_SUFFIX -p:VersionPrefix=${VERSION_PREFIX}${VERSION_REV} -p:FileVersion=${VERSION_PREFIX}.${VERSION_REV}
       working-directory: src
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
