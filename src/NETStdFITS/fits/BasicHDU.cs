@@ -463,7 +463,7 @@ namespace nom.tam.fits
         {
             get
             {
-                return myHeader.Rewriteable && myData.Rewriteable;
+                return myHeader?.Rewriteable == true && myData?.Rewriteable == true;
             }
         }
 	#endregion
