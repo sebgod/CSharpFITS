@@ -11,6 +11,7 @@ namespace nom.tam.fits
     * Use is subject to license terms
     */
    	using System;
+	using System.Globalization;
 	
 	public class FitsDate
 	{
@@ -122,7 +123,7 @@ namespace nom.tam.fits
 			{
 				if (middle + 3 < len && tStr[middle + 3] == '.')
 				{
-					double d = Double.Parse(tStr.Substring(middle + 3));
+					double d = Double.Parse(tStr.Substring(middle + 3), CultureInfo.InvariantCulture);
 					millisecond = (int)(d * 1000);
 					
 					len = middle + 3;

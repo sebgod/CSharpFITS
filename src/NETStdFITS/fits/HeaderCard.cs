@@ -13,6 +13,7 @@ namespace nom.tam.fits
    */
 
     using System;
+	using System.Globalization;
     using nom.tam.util;
     /// <summary>This class describes methods to access and manipulate the individual
     /// cards for a FITS Header.</summary>
@@ -193,7 +194,7 @@ namespace nom.tam.fits
         /// <param name="value">value (null for a comment or keyword without an '=')</param>
         /// <param name="comment">comment</param>
         /// <exception cref="">HeaderCardException for any invalid keyword</exception>
-        public HeaderCard(String key, int val, String comment):this(key, val.ToString(), comment)
+        public HeaderCard(String key, int val, String comment):this(key, val.ToString(CultureInfo.InvariantCulture), comment)
         {
           isString = false;
         }
@@ -203,7 +204,7 @@ namespace nom.tam.fits
         /// <param name="value">value (null for a comment or keyword without an '=')</param>
         /// <param name="comment">comment</param>
         /// <exception cref="">HeaderCardException for any invalid keyword</exception>
-        public HeaderCard(String key, float val, String comment):this(key, val.ToString(), comment)
+        public HeaderCard(String key, float val, String comment):this(key, val.ToString(CultureInfo.InvariantCulture), comment)
         {
           isString = false;
         }
@@ -213,7 +214,7 @@ namespace nom.tam.fits
         /// <param name="value">value (null for a comment or keyword without an '=')</param>
         /// <param name="comment">comment</param>
         /// <exception cref=""> HeaderCardException for any invalid keyword</exception>
-        public HeaderCard(String key, long val, String comment):this(key, val.ToString(), comment)
+        public HeaderCard(String key, long val, String comment):this(key, val.ToString(CultureInfo.InvariantCulture), comment)
         {
           isString = false;
         }
@@ -237,7 +238,7 @@ namespace nom.tam.fits
         /// </summary>
         private static String DblString(double input)
         {
-	        String value = input.ToString();
+	        String value = input.ToString(CultureInfo.InvariantCulture);
             
 	        if (value.Length > 20)
             {
@@ -245,9 +246,10 @@ namespace nom.tam.fits
                 if (value.IndexOf("E") != -1)
                     v = value.Substring(0, value.IndexOf("E"));
 
-                v = Double.Parse(v).ToString("N12");
-                if (!v.Equals(value))
-                    value = v + value.Substring(value.IndexOf("E"));
+                v = Double.Parse(v, CultureInfo.InvariantCulture).ToString("N12", CultureInfo.InvariantCulture);
+				var indexOfE = value.IndexOf("E");
+                if (!v.Equals(value, StringComparison.InvariantCulture) && indexOfE >= 0)
+                    value = v + value.Substring(indexOfE);
                 else
                     value = v;
 	        }

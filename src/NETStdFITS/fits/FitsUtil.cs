@@ -95,14 +95,14 @@ namespace nom.tam.fits
             // check if filename is an url.
             // Required because FileInfo dosent take uri as parameter,
             // and throws argument exception.
-            String lc = filename.ToLower();
+            String lc = filename.ToLowerInvariant();
             for (int i = 0; i < Fits.UrlProtocols.Length; i++) //check if url
             {
                 if (lc.StartsWith(Fits.UrlProtocols[i]))
                 {
                     // This seems to be a URL.hence get filename of the url to be passed to FileInfo constructor
                     int filelen = filename.Length;
-                    return (filelen > 2 && (filename.Substring(filelen - 3, 3).ToLower().Equals(".gz")));
+                    return (filelen > 2 && (filename.Substring(filelen - 3, 3).ToLowerInvariant().Equals(".gz")));
 
                 }
             }
@@ -122,7 +122,7 @@ namespace nom.tam.fits
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Ignore for the moment, but we'll probably fail when we
                 // read this file.  However we don't know for sure

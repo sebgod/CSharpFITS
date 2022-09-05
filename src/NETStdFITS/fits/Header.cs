@@ -15,6 +15,7 @@ namespace nom.tam.fits
     using System.Collections;
     using System.IO;
     using nom.tam.util;
+    using System.Globalization;
 
 	/// <summary>This class describes methods to access and manipulate the header
 	/// for a FITS HDU. This class does not include code specific
@@ -1389,7 +1390,7 @@ namespace nom.tam.fits
 				String v = fcard.Value;
 				if(v != null)
 				{
-					return Double.Parse(v);
+					return Double.Parse(v, CultureInfo.InvariantCulture);
 				}
 			}
 			catch(FormatException)
