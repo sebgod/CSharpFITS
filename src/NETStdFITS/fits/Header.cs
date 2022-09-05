@@ -90,19 +90,19 @@ namespace nom.tam.fits
 				cursor = GetCursor();
 				cursor.MoveNext();
 				String key = (String)cursor.Key;
-				if(!key.Equals("SIMPLE") && !key.Equals("XTENSION"))
+				if(!key.Equals("SIMPLE", StringComparison.Ordinal) && !key.Equals("XTENSION", StringComparison.Ordinal))
 				{
 					return false;
 				}
                 cursor.MoveNext();
 				key = (String)cursor.Key;
-				if(!key.Equals("BITPIX"))
+				if(!key.Equals("BITPIX", StringComparison.Ordinal))
 				{
                     return false;
 				}
                 cursor.MoveNext();
 				key = (String)cursor.Key;
-				if(!key.Equals("NAXIS"))
+				if(!key.Equals("NAXIS", StringComparison.Ordinal))
 				{
                     return false;
 				}
@@ -110,7 +110,7 @@ namespace nom.tam.fits
 				{
 					key = (String)cursor.Key;
 				}
-				if(!key.Equals("END"))
+				if(!key.Equals("END", StringComparison.Ordinal))
 				{
                     return false;
 				}
@@ -1205,7 +1205,7 @@ namespace nom.tam.fits
             key = ((String)cursor.Key).Trim();
 
             // if(key == null || key.Length <= colnum.Length || !key.Substring(key.Length - colnum.Length).Equals(colnum))
-            if ( key == null || ( key.Length <= (prefix+colnum).Length && key.Equals(prefix+colnum)) )
+            if ( key == null || ( key.Length <= (prefix+colnum).Length && key.Equals(prefix+colnum, StringComparison.Ordinal)) )
             {
               break;
             }
@@ -1427,11 +1427,11 @@ namespace nom.tam.fits
 				return dft;
 			}
 
-			if (val.Equals("T"))
+			if (val.Equals("T", StringComparison.Ordinal))
 			{
 				return true;
 			}
-			else if (val.Equals("F"))
+			else if (val.Equals("F", StringComparison.Ordinal))
 			{
 				return false;
 			}
@@ -1535,7 +1535,7 @@ namespace nom.tam.fits
         {
           String key = fcard.Key;
           //Console.Out.WriteLine("key = '" + key + "'");
-          if(key == null || (!key.Equals("SIMPLE") && !key.Equals("XTENSION")))
+          if(key == null || (!key.Equals("SIMPLE", StringComparison.Ordinal) && !key.Equals("XTENSION", StringComparison.Ordinal)))
           {
             throw new IOException("Not FITS format at " + fileOffset + ":" + cbuf);
           }
@@ -1552,7 +1552,7 @@ namespace nom.tam.fits
 #endif
         // save card
         AddLine(fcard);
-        if (cbuf.Substring(0, (8) - (0)).Equals("END     "))
+        if (cbuf.Substring(0, (8) - (0)).Equals("END     ", StringComparison.Ordinal))
         {
           notEnd = false;
         }
@@ -1724,13 +1724,13 @@ namespace nom.tam.fits
 			}
 			HeaderCard card = (HeaderCard)((DictionaryEntry)cursor.Current).Value;
 			String key = card.Key;
-			if(!key.Equals("SIMPLE") && !key.Equals("XTENSION"))
+			if (!key.Equals("SIMPLE", StringComparison.Ordinal) && !key.Equals("XTENSION", StringComparison.Ordinal))
 			{
 				throw new FitsException("No SIMPLE or XTENSION at beginning of Header");
 			}
 			bool isTable = false;
 			bool isExtension = false;
-			if(key.Equals("XTENSION"))
+			if (key.Equals("XTENSION", StringComparison.Ordinal))
 			{
 				String value_Renamed = card.Value;
 				if (value_Renamed == null)
@@ -1740,7 +1740,7 @@ namespace nom.tam.fits
 
 				isExtension = true;
 
-				if(value_Renamed.Equals("BINTABLE") || value_Renamed.Equals("A3DTABLE") || value_Renamed.Equals("TABLE"))
+				if(value_Renamed.Equals("BINTABLE", StringComparison.Ordinal) || value_Renamed.Equals("A3DTABLE", StringComparison.Ordinal) || value_Renamed.Equals("TABLE", StringComparison.Ordinal))
 				{
 					isTable = true;
 				}
@@ -1778,7 +1778,7 @@ namespace nom.tam.fits
 			}
 
 			HeaderCard card = (HeaderCard)((DictionaryEntry)cursor.Current).Value;
-			if(!card.Key.Equals(key))
+			if(!card.Key.Equals(key, StringComparison.Ordinal))
 			{
 				throw new FitsException("Key " + key + " not found where expected." + "Found " + card.Key);
 			}
@@ -1796,7 +1796,7 @@ namespace nom.tam.fits
 			while(cursor.MoveNext())
 			{
 				card = (HeaderCard)((DictionaryEntry)cursor.Current).Value;
-				if(!card.KeyValuePair && card.Key.Equals("END"))
+				if(!card.KeyValuePair && card.Key.Equals("END", StringComparison.Ordinal))
 				{
 					cursor.Remove();
 				}

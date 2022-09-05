@@ -122,7 +122,7 @@ namespace nom.tam.fits
     			
           if(key != null && key.Length > MAX_KEYWORD_LENGTH)
           {
-            if (!FitsFactory.UseHierarch || !key.Substring(0, (9) - (0)).Equals("HIERARCH."))
+            if (!FitsFactory.UseHierarch || !key.Substring(0, (9) - (0)).Equals("HIERARCH.", StringComparison.Ordinal))
             {
               throw new HeaderCardException("Keyword too long");
             }
@@ -248,7 +248,7 @@ namespace nom.tam.fits
 
                 v = Double.Parse(v, CultureInfo.InvariantCulture).ToString("N12", CultureInfo.InvariantCulture);
 				var indexOfE = value.IndexOf("E");
-                if (!v.Equals(value, StringComparison.InvariantCulture) && indexOfE >= 0)
+                if (!v.Equals(value, StringComparison.Ordinal) && indexOfE >= 0)
                     value = v + value.Substring(indexOfE);
                 else
                     value = v;
@@ -272,7 +272,7 @@ namespace nom.tam.fits
             if (card.Length > 80)
                 card = card.Substring(0, 80);
 
-			if(FitsFactory.UseHierarch && card.Length > 9 && card.Substring(0, (9) - (0)).Equals("HIERARCH "))
+			if(FitsFactory.UseHierarch && card.Length > 9 && card.Substring(0, (9) - (0)).Equals("HIERARCH ", StringComparison.Ordinal))
 			{
 				HierarchCard(card);
 				return ;
@@ -303,8 +303,8 @@ namespace nom.tam.fits
 
             // change suggested in .97 version:
             // Non-key/value pair lines are treated as keyed comments
-            if (key.Equals("COMMENT") || key.Equals("HISTORY") ||
-                !card.Substring(8, (10) - (8)).Equals("= "))
+            if (key.Equals("COMMENT", StringComparison.Ordinal) || key.Equals("HISTORY", StringComparison.Ordinal) ||
+                !card.Substring(8, (10) - (8)).Equals("= ", StringComparison.Ordinal))
 			{
 				comment = card.Substring(8).Trim();
 				return ;
@@ -425,7 +425,7 @@ namespace nom.tam.fits
 			while((tokLimits = GetToken(card, posit)) != null)
 			{
 				token = card.Substring(tokLimits[0], (tokLimits[1]) - (tokLimits[0]));
-				if (!token.Equals("="))
+				if (!token.Equals("=", StringComparison.Ordinal))
 				{
 					name += separator + token;
 					separator = ".";
@@ -604,7 +604,7 @@ namespace nom.tam.fits
 			// start with the keyword, if there is one
 			if(key != null)
 			{
-				if(key.Length > 9 && key.Substring(0, 9).Equals("HIERARCH."))
+				if(key.Length > 9 && key.Substring(0, 9).Equals("HIERARCH.", StringComparison.Ordinal))
 				{
 					return HierarchToString();
 				}

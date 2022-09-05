@@ -218,22 +218,22 @@ namespace nom.tam.fits
 		{
 			try
 			{
-				System.Text.StringBuilder fitsDate = new System.Text.StringBuilder();
+				var fitsDateBuilder = new System.Text.StringBuilder();
                 if(timeOfDay)
                 {
-                  fitsDate.AppendFormat("{0:s}", epoch);
-                  fitsDate.Append("." + epoch.Millisecond);
+                  fitsDateBuilder.AppendFormat("{0:s}", epoch);
+                  fitsDateBuilder.Append("." + epoch.Millisecond);
                 }
                 else
                 {
-                  fitsDate.AppendFormat("{0:D4}", epoch.Year);
-                  fitsDate.Append("-");
-                  fitsDate.AppendFormat("{0:D2}", epoch.Month);
-                  fitsDate.Append("-");
-                  fitsDate.AppendFormat("{0:D2}", epoch.Day);
+                  fitsDateBuilder.AppendFormat("{0:D4}", epoch.Year);
+                  fitsDateBuilder.Append("-");
+                  fitsDateBuilder.AppendFormat("{0:D2}", epoch.Month);
+                  fitsDateBuilder.Append("-");
+                  fitsDateBuilder.AppendFormat("{0:D2}", epoch.Day);
                 }
 
-                return new String(fitsDate.ToString().ToCharArray());
+                return new String(fitsDateBuilder.ToString().ToCharArray());
 			}
 			catch(Exception)
 			{
